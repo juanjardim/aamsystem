@@ -1,13 +1,15 @@
 var express = require('express');
-var morgan = require('morgan');
-var bodyParser = require('body-parser');
-var config = require('./config');
+
+var passport = require('passport');
 var app = express();
-app.use(bodyParser.urlencoded({extended: true}));
 
-app.use(bodyParser.json());
-app.use(morgan('dev'));
+/**Configuration section **/
+var config = require('./configs/config');
+require('./configs/passport');
+require('./configs/mongoose')(config);
+require('./configs/express')(app);
 
+app.use(passport.initialize());
 app.listen(config.port);
 
 /** Instantiate routes **/
