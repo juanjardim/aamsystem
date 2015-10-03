@@ -7,6 +7,10 @@ var UserSchema = new mongoose.Schema({
     password: {type: String, select: false}
 });
 
+UserSchema.methods.comparePassword = function(password, callback){
+    bcrypt.compare(password, this.password, callback);
+};
+
 UserSchema.pre('save', function(next){
     var user = this;
 
@@ -30,9 +34,7 @@ UserSchema.pre('save', function(next){
 });
 
 
-UserSchema.methods.validPassword = function(password){
-    return bcrypt.compareSync(password, this.local.password);
-};
 
 
-exports.model = mongoose.model('User', UserSchema);
+
+module.exports = mongoose.model('User', UserSchema);

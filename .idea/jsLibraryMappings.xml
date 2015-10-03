@@ -4,11 +4,12 @@
     <file url="file://$PROJECT_DIR$" libraries="{AAMSystem node_modules}" />
     <file url="file://$PROJECT_DIR$/configs/config.js" libraries="{Node.js Globals}" />
     <file url="file://$PROJECT_DIR$/configs/express.js" libraries="{Node.js Globals}" />
-    <file url="file://$PROJECT_DIR$/configs/passport.js" libraries="{Node.js Globals}" />
     <file url="file://$PROJECT_DIR$/models/User.js" libraries="{Node.js Globals}" />
     <file url="file://$PROJECT_DIR$/routes/authentication.js" libraries="{Node.js Globals}" />
     <file url="file://$PROJECT_DIR$/routes/main.js" libraries="{Node.js Globals}" />
     <file url="file://$PROJECT_DIR$/server.js" libraries="{Node.js Globals}" />
+    <file url="file://$PROJECT_DIR$/services/localStrategy.js" libraries="{Node.js Globals}" />
+    <file url="file://$PROJECT_DIR$/test/autentication.js" libraries="{Node.js Globals}" />
     <file url="file://$PROJECT_DIR$/test/routes.js" libraries="{Node.js Globals}" />
   </component>
 </project>

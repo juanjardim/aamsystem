@@ -2,9 +2,20 @@
 process.env.NODE_ENV = 'testing';
 var request = require('supertest');
 var should = require('should');
-var server = require('../server');
+//var server = require('../server');
 
 describe('Testing routes', function(){
+    var server;
+    before(function(done){
+        delete require.cache[require.resolve('../server')];
+        server = require('../server');
+        done();
+    });
+
+    after(function(done){
+        server.close(done);
+        console.log("connection close");
+    });
 
     it('should return a welcome message at the index', function(done){
         request(server)
@@ -17,10 +28,10 @@ describe('Testing routes', function(){
             });
     });
 
-
-    it('should return 404 on routes don\'t defined', function(done){
+    it('should return 404 on not defined routes', function(done){
         request(server)
             .get('/sometime/wrong')
             .expect(404, done);
     });
+
 });
