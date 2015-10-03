@@ -17,12 +17,14 @@ var loginStrategy = new LocalStrategy(
             }
             if(!user){
                 return done(null, false, {
+                    success: false,
                     message: 'Wrong email/password'
                 });
             }
 
             if(!user.validPassword(password)){
                 return done(null, false, {
+                    success: false,
                     message: 'Wrong email/password'
                 });
             }
@@ -43,5 +45,5 @@ module.exports = function(passport){
         });
     });
 
-    passport.use(loginStrategy);
+    passport.use('local-login', loginStrategy);
 };

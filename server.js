@@ -10,10 +10,12 @@ require('./configs/mongoose')(config);
 require('./configs/express')(app);
 
 app.use(passport.initialize());
+
 app.listen(config.port);
 
 /** Instantiate routes **/
 require('./routes/main')(app);
+require('./routes/authentication')(app, config);
 
 console.log('Magic happens on port: ' + config.port + '. Environment:' + config.environment);
 
