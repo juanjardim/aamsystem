@@ -1,8 +1,8 @@
 var jwt = require('../services/jwt');
+var passport = require('passport');
 
 
-
-module.exports = function(app, passport) {
+module.exports = function(app) {
     app.post('/login', function(req, res, next) {
         passport.authenticate('local-login', function(err, user, info) {
             if (err) {
@@ -14,7 +14,7 @@ module.exports = function(app, passport) {
 
             res.json({
                 success: true,
-                token: jwt.generateToken(req.users)
+                token: jwt.generateToken(req.user)
             });
         })(req, res, next);
     });

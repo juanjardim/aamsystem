@@ -21,7 +21,7 @@ var server = app.listen(config.port);
 /** Instantiate routes **/
 
 require('./routes/main')(app);
-require('./routes/authentication')(app, passport);
+require('./routes/authentication')(app);
 
 
 
