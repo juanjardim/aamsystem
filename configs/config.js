@@ -22,5 +22,5 @@ module.exports = {
     mongoURI: mongoURI,
     jwtTokenSecret: 'LeAmmS4cre5Str',
     jwtExpiration: 1, //days
-    jwtAlgorithm: 'RS256'
+    jwtAlgorithm: 'HS512'
 };

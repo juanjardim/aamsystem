@@ -3,18 +3,18 @@ process.env.NODE_ENV = 'testing';
 var request = require('supertest');
 var should = require('should');
 //var server = require('../server');
+var mongoose = require('mongoose');
 
 describe('Testing routes', function(){
     var server;
     before(function(done){
-        delete require.cache[require.resolve('../server')];
-        server = require('../server');
+        delete require.cache[require.resolve('../../server')];
+        server = require('../../server');
         done();
     });
 
     after(function(done){
         server.close(done);
-        console.log("connection close");
     });
 
     it('should return a welcome message at the index', function(done){

@@ -2,12 +2,13 @@
 process.env.NODE_ENV = 'testing';
 var request = require('supertest');
 var should = require('should');
+var mongoose = require('mongoose');
 
 describe('testing authentication actions', function(){
     var server;
     before(function(done){
-        delete require.cache[require.resolve('../server')];
-        server = require('../server');
+        delete require.cache[require.resolve('../../server')];
+        server = require('../../server');
         done();
     });
 
