@@ -2,6 +2,7 @@
 var crypto = require('crypto');
 var q = require('q');
 var User = require('../models/User');
+var Email = require('../services/email');
 
 var userController = function(){
     var createUser = function(username, email, fields){
@@ -22,6 +23,7 @@ var userController = function(){
                 if(err){
                     return deferred.reject(err);
                 }
+                Email.sendMail("Congratulations this is your password: " + generatedPassword, email, "AMMSystem password request");
                 return deferred.resolve(newUser.toJSON());
             });
         }, function(err){

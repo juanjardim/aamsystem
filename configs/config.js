@@ -23,7 +23,5 @@ module.exports = {
     jwtTokenSecret: 'LeAmmS4cre5Str',
     jwtExpiration: 1, //days
     jwtAlgorithm: 'HS512',
-    emailService: "Gmail", //TODO put your email service here
-    emailUser: "", //TODO put your email here
-    emailPassword: "" // TODO put your email password here
+    apiKey: 'yourApiKey'
 };
