@@ -2,8 +2,6 @@
 process.env.NODE_ENV = 'testing';
 var request = require('supertest');
 var should = require('should');
-//var server = require('../server');
-var mongoose = require('mongoose');
 
 describe('Testing routes', function(){
     var server;

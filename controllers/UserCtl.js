@@ -6,9 +6,9 @@ var User = require('../models/User');
 var userController = function(){
     var createUser = function(username, email, fields){
         var deferred = q.defer();
-        userExist(username).then(function(hasUser){
-            if(hasUser){
-                return deferred.reject(new Error('User already Exist'));
+        getUser(username).then(function(hasUser){
+            if(hasUser !== null){
+                return deferred.reject('User already Exist');
             }
             var generatedPassword = crypto.randomBytes(5).toString('hex');
             var newUser = new User({
@@ -28,30 +28,38 @@ var userController = function(){
             console.error(err);
             return err;
         });
-
         return deferred.promise;
     };
 
-    var userExist = function(username){
+    var getUser = function(username){
         var deferred = q.defer();
-        User.find({username: username}, function(err, user){
+        User.findOne({username: username}, function(err, user){
             if(err){
                 deferred.reject(err);
             }
-
-            if(!user || user.length == 0)
-                deferred.resolve(false);
+            if(user === null)
+                deferred.resolve(null);
             else
-                deferred.resolve(true);
-
+                deferred.resolve(user);
         });
+        return deferred.promise;
+    };
 
+    var getAllUsers = function(){
+        var deferred = q.defer();
+        User.find({}, {password: 0}, function(err, users){
+            if(err){
+                deferred.reject(err);
+            }
+            deferred.resolve(users);
+        });
         return deferred.promise;
     };
 
     return {
         createUser : createUser,
-        userExist: userExist
+        getUser: getUser,
+        getAllUsers: getAllUsers
     };
 };
 

@@ -12,7 +12,11 @@ gulp.task('mocha', function(){
 });
 
 gulp.task('watch-mocha', function(){
-    gulp.watch(['test/**/*.js', 'services/**/*.js', 'controllers/**/*.js'], ['mocha']);
+    gulp.watch(['test/**/*.js',
+        'services/**/*.js',
+        'controllers/**/*.js',
+        'routes/**/*.js'],
+        ['mocha']);
 });
 
 gulp.task('nodemon', function(){

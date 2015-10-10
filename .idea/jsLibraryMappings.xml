@@ -10,6 +10,6 @@
     <file url="file://$PROJECT_DIR$/server.js" libraries="{Node.js Globals}" />
     <file url="file://$PROJECT_DIR$/services/localStrategy.js" libraries="{Node.js Globals}" />
     <file url="file://$PROJECT_DIR$/test/E2E/autentication.js" libraries="{Node.js Globals}" />
-    <file url="file://$PROJECT_DIR$/test/E2E/routes.js" libraries="{Node.js Globals}" />
+    <file url="file://$PROJECT_DIR$/test/E2E/main.js" libraries="{Node.js Globals}" />
   </component>
 </project>

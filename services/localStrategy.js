@@ -1,3 +1,4 @@
+'use strict';
 var LocalStrategy = require('passport-local').Strategy;
 var User = require('../models/User');
 
@@ -21,6 +22,13 @@ exports.login = new LocalStrategy(strategyOptions,
                 });
             }
 
+            if(user.active === false){
+                return done(null, false, {
+                    success: false,
+                    error: 'User inactive, please contact admin'
+                });
+            }
+
             user.comparePassword(password, function (err, isMatch) {
                 if(err){
                     return done(err);
@@ -33,7 +41,7 @@ exports.login = new LocalStrategy(strategyOptions,
                 }
                 return done(null, user);
             });
-        })
+        });
     }
 );
 
