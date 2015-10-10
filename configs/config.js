@@ -22,5 +22,7 @@ module.exports = {
     mongoURI: mongoURI,
     jwtTokenSecret: 'LeAmmS4cre5Str',
     jwtExpiration: 1, //days
-    jwtAlgorithm: 'HS512'
+    jwtAlgorithm: 'HS512',
+    emailUser: "", //TODO put your email here
+    emailPassword: "" // TODO put your email password here
 };
