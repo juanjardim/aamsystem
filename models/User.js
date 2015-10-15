@@ -19,6 +19,9 @@ var UserSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
+    status: String,
+    createdAt: Date,
+    lastUpdatePassword: Date,
     password: {type: String, select: false}
 });
 
@@ -38,6 +41,7 @@ UserSchema.pre('save', function (next) {
     if (!user.isModified('password')) {
         return next();
     }
+    user.lastUpdatePassword =  Date();
 
     bcrypt.genSalt(4, function (err, salt) {
         if (err) {

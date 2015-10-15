@@ -27,7 +27,8 @@
     "nodemailer-sendgrid-transport": "^0.2.0",
     "passport": "^0.3.0",
     "passport-local": "^1.0.0",
-    "q": "^1.4.1"
+    "q": "^1.4.1",
+    "validator": "^4.1.0"
   },
   "devDependencies": {
     "better-console": "^0.2.4",

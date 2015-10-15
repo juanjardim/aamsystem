@@ -11,5 +11,7 @@
     <file url="file://$PROJECT_DIR$/services/localStrategy.js" libraries="{Node.js Globals}" />
     <file url="file://$PROJECT_DIR$/test/E2E/autentication.js" libraries="{Node.js Globals}" />
     <file url="file://$PROJECT_DIR$/test/E2E/main.js" libraries="{Node.js Globals}" />
+    <file url="PROJECT" libraries="{Node.js v0.12.7 Core Modules, bootstrap-DefinitelyTyped, express-DefinitelyTyped, mongoose-DefinitelyTyped, q-DefinitelyTyped}" />
+    <includedPredefinedLibrary name="Node.js Globals" />
   </component>
 </project>
