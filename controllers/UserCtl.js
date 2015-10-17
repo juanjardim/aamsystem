@@ -28,7 +28,7 @@ var userController = function(){
                 email: email,
                 fields: fields,
                 password: generatedPassword,
-                status: "ACTIVE"
+                status: 'ACTIVE'
             });
 
             newUser.save(function(err){
@@ -39,8 +39,7 @@ var userController = function(){
                 return deferred.resolve(newUser.toJSON());
             });
         }, function(err){
-            console.error(err);
-            return err;
+            deferred.reject(err);
         });
         return deferred.promise;
     };
@@ -88,20 +87,21 @@ var userController = function(){
         return deferred.promise;
     };
 
-    var deactivateUser = function(userId){
+    var changeUserStatus = function(userId, status){
         var deferred = q.defer();
-        this.getUserById(userId).then(function(user){
+        getUserById(userId).then(function(user){
             if(validator.isNull(user)){
                 return deferred.reject('User not found');
             }
-            user.status = 'INACTIVE';
-
+            user.status = status;
             user.save(function(err, user){
                 if(err){
                     return deferred.reject(err);
                 }
                 return deferred.resolve(user.toJSON());
             });
+        }, function(err){
+            deferred.reject(err);
         });
         return deferred.promise;
     };
@@ -123,14 +123,93 @@ var userController = function(){
             return deferred.promise;
         }
 
-        this.getUserById(userId).then(function(user){
+        getUserById(userId).then(function(user){
             if(validator.isNull(user)){
                 return deferred.reject('User not found');
             }
             user.password = newPassword;
             user.save(function(err){
+                if(err){
+                    return deferred.reject(err);
+                }
                 return deferred.resolve("Password changed");
             });
+        }, function(err){
+            deferred.reject(err);
+        });
+        return deferred.promise;
+    };
+
+    var resetPassword = function(userId){
+        var deferred = q.defer();
+        if(validator.isNull(userId)){
+            deferred.reject('User Id cannot be null');
+            return deferred.promise;
+        }
+        getUserById(userId).then(function(user){
+            if(validator.isNull(user)){
+                return deferred.reject('Invalid User');
+            }
+            var generatedPassword = crypto.randomBytes(5).toString('hex');
+            user.password = generatedPassword;
+            user.save(function(err, user){
+                if(err){
+                    return deferred.reject(err);
+                }
+                Email.sendMail("Congratulations this is your password: " + generatedPassword, user.email, "AMMSystem password request");
+                return deferred.resolve("Password reset");
+            });
+
+        }, function(err){
+            return deferred.reject(err);
+        });
+        return deferred.promise;
+    };
+
+    var addGroupToUser = function(userId, group){
+        var deferred = q.defer();
+        if(validator.isNull(userId)){
+            deferred.reject('User Id cannot be null');
+            return deferred.promise;
+        }
+        if(validator.isNull(group)){
+            deferred.reject('Group cannot be null');
+            return deferred.promise;
+        }
+        getUserById(userId).then(function(user){
+            user.groups.push(group);
+            user.save(function(err, user){
+                if(err){
+                    return deferred.reject(err);
+                }
+                deferred.resolve(user);
+            });
+        }, function(err){
+            deferred.reject(err);
+        });
+        return deferred.promise;
+    };
+
+    var removeGroupToUser = function(userId, group){
+        var deferred = q.defer();
+        if(validator.isNull(userId)){
+            deferred.reject('User Id cannot be null');
+            return deferred.promise;
+        }
+        if(validator.isNull(group)){
+            deferred.reject('Group cannot be null');
+            return deferred.promise;
+        }
+        getUserById(userId).then(function(user){
+            user.groups.pop(group);
+            user.save(function(err, user){
+                if(err){
+                    return deferred.reject(err);
+                }
+                deferred.resolve(user);
+            });
+        }, function(err){
+            deferred.reject(err);
         });
         return deferred.promise;
     };
@@ -140,9 +219,13 @@ var userController = function(){
         getUserByUsername: getUserByUsername,
         getUserById: getUserById,
         getAllUsers: getAllUsers,
-        deactivateUser: deactivateUser,
-        changePassword : changePassword
+        changeUserStatus: changeUserStatus,
+        changePassword : changePassword,
+        addGroupToUser : addGroupToUser,
+        removeGroupToUser : removeGroupToUser,
+        resetPassword : resetPassword
+
     };
 };
 
-module.exports = userController;
+module.exports = userController();

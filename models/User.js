@@ -8,12 +8,8 @@ var UserSchema = new mongoose.Schema({
     roles: [{
         type: String
     }],
-    groups: [{
-        type: String
-    }],
-    permissions: [{
-        type: String
-    }],
+    groups: [mongoose.Schema.Types.ObjectId],
+    permissions: [mongoose.Schema.Types.ObjectId],
     fields: {},
     active: {
         type: Boolean,
