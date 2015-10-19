@@ -23,8 +23,8 @@ describe('Testing Group Controller', function () {
     it('Create a new group', function (done) {
         GroupCtl.createGroup(group.name, group.description).then(function (group) {
             should.exist(group);
-            done();
             createdGroup = group;
+            done();
         }, function (err) {
             should.not.exist(err);
             done();
@@ -42,12 +42,12 @@ describe('Testing Group Controller', function () {
         })
     });
 
-    it('Get an existing group by id', function(done){
-        GroupCtl.getGroupById(createdGroup._id).then(function(group){
+    it('Get an existing group by id', function (done) {
+        GroupCtl.getGroupById(createdGroup._id).then(function (group) {
             should.exist(group);
             createdGroup._id.should.be.eql(group._id);
             done();
-        }, function(err){
+        }, function (err) {
             should.not.exist(err);
             done();
         });
@@ -64,23 +64,23 @@ describe('Testing Group Controller', function () {
         });
     });
 
-    it('Get all Groups', function(done){
-        GroupCtl.getAllGroups().then(function(groups){
+    it('Get all Groups', function (done) {
+        GroupCtl.getAllGroups().then(function (groups) {
             should.exist(groups);
             groups.should.have.length(1);
             done();
-        }, function(err){
+        }, function (err) {
             should.not.exist(err);
             done();
         });
     });
 
-    it('Change status by Id to Deactivated', function(done){
-        GroupCtl.changeGroupStatus(createdGroup._id, "DEACTIVATED").then(function(group){
+    it('Change status by Id to INACTIVE', function (done) {
+        GroupCtl.changeGroupStatus(createdGroup._id, "INACTIVE").then(function (group) {
             should.exist(group);
-            group.status.should.be.eql("DEACTIVATED");
+            group.status.should.be.eql("INACTIVE");
             done();
-        }, function(err){
+        }, function (err) {
             should.not.exist(err);
             done();
         });
@@ -96,7 +96,12 @@ describe('Testing Group Controller', function () {
 
     after(function (done) {
         mongoose.connection.db.dropDatabase(function () {
-            //mongoose.connection.close(done);
+            //if (mongoose.connection.db) {
+            //    mongoose.connection.close(done);
+            //}
+            //else {
+            //    done();
+            //}
             done();
         });
     });
