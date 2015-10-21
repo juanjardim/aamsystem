@@ -177,6 +177,19 @@ describe('Testing User Controller', function () {
                 done();
             });
         });
+
+        it('Cannot be added a group that the user already have', function(done){
+            UserCtl.addGroupToUser(createdUser._id, group).then(function(user){
+                should.exist(user);
+                user.groups.should.have.length(0);
+                done();
+            }, function(err){
+                should.exist(err);
+                err.should.be.equal('User is already in this group');
+                done();
+            });
+        });
+
         it('Cannot add a null Group to an User', function(done){
             UserCtl.addGroupToUser(createdUser._id, null).then(function(user){
                 should.not.exist(user);
@@ -198,6 +211,7 @@ describe('Testing User Controller', function () {
                 done();
             });
         });
+
         it('Cannot remove a null Group to an User', function(done){
             UserCtl.addGroupToUser(createdUser._id, null).then(function(user){
                 should.not.exist(user);
@@ -211,8 +225,73 @@ describe('Testing User Controller', function () {
     });
 
     describe('Operation for single Permission', function(){
-        it('Add single Permission');
-        it('Remove an existing Permission')
+        var permission;
+        var secondPermission;
+        before(function(){
+            permission = {
+                _id:  mongoose.Types.ObjectId(),
+                name: 'Test Permission'
+            };
+            secondPermission = {
+                _id:  mongoose.Types.ObjectId(),
+                name: 'Test Second Permission'
+            };
+        });
+        it('Add single Permission', function(done){
+            UserCtl.addPermissionToUser(createdUser._id, permission).then(function(user){
+                should.exist(user);
+                user.permissions.should.have.length(1);
+                done();
+            }, function(err){
+                should.not.exist(err);
+                done();
+            });
+        });
+
+        it('Cannot be added a permission that the user already have', function(done){
+            UserCtl.addPermissionToUser(createdUser._id, permission).then(function(user){
+                should.exist(user);
+                user.permissions.should.have.length(0);
+                done();
+            }, function(err){
+                should.exist(err);
+                err.should.be.equal('User already have this permission');
+                done();
+            });
+        });
+
+        it('Remove an existing Permission', function(done){
+            UserCtl.removePermissionToUser(createdUser._id, permission).then(function(user){
+                should.exist(user);
+                user.permissions.should.have.length(0);
+                done();
+            }, function(err){
+                should.not.exist(err);
+                done();
+            });
+        });
+
+        it('Cannot Remove null Permission',function(done){
+            UserCtl.removePermissionToUser(createdUser._id, null).then(function(user){
+                should.not.exist(user);
+                done();
+            }, function(err){
+                should.exist(err);
+                err.should.be.equal('Permission cannot be null');
+                done();
+            });
+        });
+
+        it('Cannot Remove a Permission that the user does not have', function(done){
+            UserCtl.removePermissionToUser(createdUser._id, secondPermission).then(function(user){
+                should.not.exist(user);
+                done();
+            }, function(err){
+                should.exist(err);
+                err.should.be.equal('User does not have this permission');
+                done();
+            });
+        });
     });
 
     after(function (done) {

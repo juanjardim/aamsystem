@@ -80,6 +80,7 @@ describe('Testing Admin actions', function () {
                     done();
                 });
         });
+
         it('Not Reset a password for an invalid user', function (done) {
             request(server)
                 .post(url + '/user/resetpassword')
@@ -258,6 +259,7 @@ describe('Testing Admin actions', function () {
                     done();
                 });
         });
+
         it('Remove a Group', function(done){
             var body = {
                 user: createdUser,
@@ -276,6 +278,111 @@ describe('Testing Admin actions', function () {
                     done();
                 });
         });
+
+        it('Get all groups that the user is in');
+    });
+
+    describe('Testing action for users and permissionos', function () {
+        var createdPermission, createdUser;
+        before(function (done) {
+            mongoose.connection.db.dropDatabase(done);
+        });
+
+        before(function(done){
+            var newPermission = {
+                name: 'New Permission',
+                description: 'this is a new permission'
+            };
+            request(server)
+                .post(url + '/permission')
+                .send(newPermission)
+                .expect(200)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should.exist(res.body.permission);
+                    createdPermission = res.body.permission;
+                    createdPermission.name.should.be.equal(newPermission.name);
+                    done();
+                });
+        });
+
+        before(function(done){
+            var newUser = {
+                username: "juanjardim",
+                email: "juanjardim@gmail.com",
+                fields: []
+            };
+            request(server)
+                .post(url + '/user')
+                .send(newUser)
+                .expect(200)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should.exist(res.body.user);
+                    createdUser = res.body.user;
+                    createdUser.username.should.equal(newUser.username);
+                    createdUser.active.should.be.true();
+                    done();
+                });
+        });
+
+        it('Add a Permission to an existing user', function (done) {
+            var body = {
+                user: createdUser,
+                permission: createdPermission
+            };
+            request(server)
+                .post(url + '/user/permission')
+                .send(body)
+                .expect(200)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should.exist(res.body.user);
+                    var requestedUser = res.body.user;
+                    requestedUser._id.should.be.eql(createdUser._id);
+                    requestedUser.permissions.should.have.length(1);
+                    done();
+                });
+        });
+        it('Return an error when adding a nonexistent permission', function(done){
+            var body = {
+                user: createdUser,
+                permission: {
+                    _id: mongoose.Types.ObjectId()
+                }
+            };
+            request(server)
+                .post(url + '/user/permission')
+                .send(body)
+                .expect(404)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should.exist(res.body.error);
+                    res.body.error.should.be.equal('Permission not found');
+                    done();
+                });
+        });
+
+        it('Remove a  From Permission', function(done){
+            var body = {
+                user: createdUser,
+                permission: createdPermission
+            };
+            request(server)
+                .delete(url + '/user/permission')
+                .send(body)
+                .expect(200)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should.exist(res.body.user);
+                    var requestedUser = res.body.user;
+                    requestedUser._id.should.be.eql(createdUser._id);
+                    requestedUser.permissions.should.have.length(0);
+                    done();
+                });
+        });
+
+        it('Get all permissions that the user has');
     });
 
 });

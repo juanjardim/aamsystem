@@ -3,6 +3,7 @@ var express = require('express');
 var router = express.Router();
 var UserCtl = require('../controllers/UserCtl');
 var GroupCtl = require('../controllers/GroupCtl');
+var PermissionCtl = require('../controllers/PermissionCtl');
 
 module.exports = function (app) {
 
@@ -107,6 +108,49 @@ module.exports = function (app) {
         GroupCtl.changeGroupStatus(group._id, status).then(function(group){
             res.status(200).json({group: group});
         }, function(err){
+            res.status(500).json({error: err});
+        });
+    });
+
+    router.post('/permission', function(req, res){
+        var permission = req.body;
+        PermissionCtl.createPermission(permission.name, permission.description).then(function(permission){
+            res.status(200).json({permission:permission});
+        }, function(err){
+            res.status(500).json({error: err});
+        });
+    });
+
+    router.post('/user/permission', function(req, res){
+        var user = req.body.user;
+        var permission = req.body.permission;
+        PermissionCtl.getPermissionById(permission._id).then(function(permission){
+            if(permission == null){
+                return res.status(404).json({error: 'Permission not found'});
+            }
+            UserCtl.addPermissionToUser(user._id, permission).then(function(user){
+                res.status(200).json({user: user});
+            }, function(err){
+                res.status(500).json({error: err});
+            });
+        }, function (err) {
+            res.status(500).json({error: err});
+        });
+    });
+
+    router.delete('/user/permission', function(req, res){
+        var user = req.body.user;
+        var permission = req.body.permission;
+        PermissionCtl.getPermissionById(permission._id).then(function(permission){
+            if(permission == null){
+                return res.status(404).json({error: 'Permission not found'});
+            }
+            UserCtl.removePermissionToUser(user._id, permission).then(function(user){
+                res.status(200).json({user: user});
+            }, function(err){
+                res.status(500).json({error: err});
+            });
+        }, function (err) {
             res.status(500).json({error: err});
         });
     });
