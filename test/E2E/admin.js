@@ -241,6 +241,21 @@ describe('Testing Admin actions', function () {
                     done();
                 });
         });
+
+        it('Get all groups that the user is in', function(done){
+            request(server)
+                .get(url + '/user/'+ createdUser._id + '/groups')
+                .expect(200)
+                .end(function(err, res){
+                    should.not.exist(err);
+                    should.exist(res.body.user);
+                    var requestedUser = res.body.user;
+                    requestedUser._id.should.be.eql(createdUser._id);
+                    requestedUser.groups.should.have.length(1);
+                    done();
+                });
+        });
+
         it('Return an error when adding a nonexistent group', function(done){
             var body = {
                 user: createdUser,
@@ -279,7 +294,6 @@ describe('Testing Admin actions', function () {
                 });
         });
 
-        it('Get all groups that the user is in');
     });
 
     describe('Testing action for users and permissionos', function () {
@@ -344,6 +358,7 @@ describe('Testing Admin actions', function () {
                     done();
                 });
         });
+
         it('Return an error when adding a nonexistent permission', function(done){
             var body = {
                 user: createdUser,
@@ -363,7 +378,21 @@ describe('Testing Admin actions', function () {
                 });
         });
 
-        it('Remove a  From Permission', function(done){
+        it('Get all permissions that the user has', function(done){
+            request(server)
+                .get(url + '/user/' + createdUser._id + '/permissions')
+                .expect(200)
+                .end(function(err, res){
+                    should.not.exist(err);
+                    should.exist(res.body.user);
+                    var requestedUser = res.body.user;
+                    requestedUser._id.should.be.eql(createdUser._id);
+                    requestedUser.permissions.should.have.length(1);
+                    done();
+                });
+        });
+
+        it('Remove a Permission from user', function(done){
             var body = {
                 user: createdUser,
                 permission: createdPermission
@@ -382,7 +411,6 @@ describe('Testing Admin actions', function () {
                 });
         });
 
-        it('Get all permissions that the user has');
     });
 
 });

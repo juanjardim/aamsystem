@@ -55,7 +55,7 @@ module.exports = function (app) {
                 return res.status(404).json({error: 'Group not found'});
             }
             UserCtl.addGroupToUser(user._id, group).then(function(user){
-                res.status(200).json({user: user});
+                GroupCtl.getUserGroups(req, res, user);
             }, function(err){
                 res.status(500).json({error: err});
             });
@@ -72,7 +72,60 @@ module.exports = function (app) {
                 return res.status(404).json({error: 'Group not found'});
             }
             UserCtl.removeGroupToUser(user._id, group).then(function(user){
-                res.status(200).json({user: user});
+                GroupCtl.getUserGroups(req, res, user);
+            }, function(err){
+                res.status(500).json({error: err});
+            });
+        }, function (err) {
+            res.status(500).json({error: err});
+        });
+    });
+
+    router.get('/user/:id/groups', function(req, res){
+        var userId = req.params.id;
+        UserCtl.getUserById(userId).then(function(user){
+            GroupCtl.getUserGroups(req, res, user);
+        }, function(err){
+            console.log(err);
+            res.status(500).json({error: err});
+        })
+    });
+
+    router.get('/user/:id/permissions', function(req, res){
+        var userId = req.params.id;
+        UserCtl.getUserById(userId).then(function(user){
+            PermissionCtl.getUserPermissions(req, res, user);
+        },function(err){
+            res.status(500).json({error: err});
+        });
+    });
+
+    router.post('/user/permission', function(req, res){
+        var user = req.body.user;
+        var permission = req.body.permission;
+        PermissionCtl.getPermissionById(permission._id).then(function(permission){
+            if(permission == null){
+                return res.status(404).json({error: 'Permission not found'});
+            }
+            UserCtl.addPermissionToUser(user._id, permission).then(function(user){
+                PermissionCtl.getUserPermissions(req, res, user);
+            }, function(err){
+                res.status(500).json({error: err});
+            });
+        }, function (err) {
+            res.status(500).json({error: err});
+        });
+    });
+
+    router.delete('/user/permission', function(req, res){
+        var user = req.body.user;
+        var permission = req.body.permission;
+        PermissionCtl.getPermissionById(permission._id).then(function(permission){
+            if(permission == null){
+                return res.status(404).json({error: 'Permission not found'});
+            }
+            UserCtl.removePermissionToUser(user._id, permission).then(function(user){
+                PermissionCtl.getUserPermissions(req, res, user);
             }, function(err){
                 res.status(500).json({error: err});
             });
@@ -121,39 +174,7 @@ module.exports = function (app) {
         });
     });
 
-    router.post('/user/permission', function(req, res){
-        var user = req.body.user;
-        var permission = req.body.permission;
-        PermissionCtl.getPermissionById(permission._id).then(function(permission){
-            if(permission == null){
-                return res.status(404).json({error: 'Permission not found'});
-            }
-            UserCtl.addPermissionToUser(user._id, permission).then(function(user){
-                res.status(200).json({user: user});
-            }, function(err){
-                res.status(500).json({error: err});
-            });
-        }, function (err) {
-            res.status(500).json({error: err});
-        });
-    });
 
-    router.delete('/user/permission', function(req, res){
-        var user = req.body.user;
-        var permission = req.body.permission;
-        PermissionCtl.getPermissionById(permission._id).then(function(permission){
-            if(permission == null){
-                return res.status(404).json({error: 'Permission not found'});
-            }
-            UserCtl.removePermissionToUser(user._id, permission).then(function(user){
-                res.status(200).json({user: user});
-            }, function(err){
-                res.status(500).json({error: err});
-            });
-        }, function (err) {
-            res.status(500).json({error: err});
-        });
-    });
 
     app.use('/admin', router);
 };

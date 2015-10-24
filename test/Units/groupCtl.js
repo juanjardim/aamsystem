@@ -87,22 +87,79 @@ describe('Testing Group Controller', function () {
     });
 
     describe('Operations for permissions', function () {
-        it('Add permissions');
-        it('Remove permissions');
-        it('Add permission cluster');
-        it('Remove permission cluster');
+        var permission;
+
+        before(function(done){
+            permission = {
+                _id:  mongoose.Types.ObjectId(),
+                name: 'Test Permission'
+            };
+            done();
+        });
+
+        it('Add permissions', function(done){
+            GroupCtl.addPermissionToGroup(createdGroup._id, permission).then(function(group){
+                should.exist(group);
+                group._id.should.be.eql(createdGroup._id);
+                group.permissions.should.have.length(1);
+                done();
+            }, function(err){
+                should.not.exist(err);
+                done();
+            });
+        });
+
+        it('Cannot add the same permission to Group', function(done){
+            GroupCtl.addPermissionToGroup(createdGroup._id, permission).then(function(group){
+                should.not.exist(group);
+                done();
+            }, function(err){
+                should.exist(err);
+                err.should.be.equal('Group already has this permission');
+                done();
+            });
+        });
+
+        it('Cannot add a not defined permission', function(done){
+            GroupCtl.addPermissionToGroup(createdGroup._id, null).then(function(group){
+                should.not.exist(group);
+                done();
+            }, function(err){
+                should.exist(err);
+                err.should.be.equal('Permission cannot be null');
+                done();
+            });
+        });
+
+        it('Get all Groups by ids', function(done){
+            GroupCtl.getAllGroupsByIds([createdGroup._id]).then(function(groups){
+                should.exist(groups);
+                groups.should.have.length(1);
+                done();
+            }, function (err){
+                should.not.exist(err);
+                done();
+            });
+        });
+
+        it('Remove permissions', function(done){
+            GroupCtl.removePermissionToGroup(createdGroup._id, permission).then(function(group){
+                should.exist(group);
+                group.permissions.should.have.length(0);
+                done();
+            }, function(err){
+                should.not.exist(err);
+                done();
+            });
+        });
+    });
+
+    describe('User Groups', function(){
+        it('Get all User Groups');
     });
 
 
     after(function (done) {
-        mongoose.connection.db.dropDatabase(function () {
-            //if (mongoose.connection.db) {
-            //    mongoose.connection.close(done);
-            //}
-            //else {
-            //    done();
-            //}
-            done();
-        });
+        mongoose.connection.db.dropDatabase(done);
     });
 });

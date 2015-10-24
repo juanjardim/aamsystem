@@ -6,7 +6,8 @@ var PermissionSchema = new mongoose.Schema({
     description: String,
     status: String,
     createdAt: Date,
-    lastUpdate: Date
+    lastUpdate: Date,
+    application: mongoose.Schema.Types.ObjectId
 });
 
 PermissionSchema.pre('save', function (next) {

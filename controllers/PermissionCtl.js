@@ -103,10 +103,10 @@ var permissionController = function () {
         return deferred.promise;
     };
 
-    var getAllPermissions = function(){
+    var getAllPermissions = function () {
         var deferred = q.defer();
-        Permission.find(function(err, permissions){
-            if(err){
+        Permission.find(function (err, permissions) {
+            if (err) {
                 return deferred.reject(err);
             }
             return deferred.resolve(permissions);
@@ -114,12 +114,43 @@ var permissionController = function () {
         return deferred.promise;
     };
 
+    var getPermissionsById = function (ids) {
+        var deferred = q.defer();
+        var promise = deferred.promise;
+
+        if (validator.isNull(ids)) {
+            deferred.resolve([]);
+            return promise;
+        }
+
+        Permission.find({_id: {$in: ids}}, function (err, permissions) {
+            if (err) {
+                return deferred.reject(err);
+            }
+            deferred.resolve(permissions);
+        });
+
+        return promise;
+    };
+
+    var getUserPermissions = function(req, res, user){
+        getPermissionsById(user.permissions).then(function(permissions){
+            user = user.toJSON();
+            user.permissions = permissions;
+            res.status(200).json({user: user});
+        }, function(err){
+            res.status(500).json({error: err});
+        });
+    };
+
     return {
         getPermissionById: getPermissionById,
         getPermissionByName: getPermissionByName,
         createPermission: createPermission,
-        changePermissionStatus : changePermissionStatus,
-        getAllPermissions: getAllPermissions
+        changePermissionStatus: changePermissionStatus,
+        getAllPermissions: getAllPermissions,
+        getPermissionsById: getPermissionsById,
+        getUserPermissions : getUserPermissions
     };
 };
 

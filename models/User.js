@@ -10,6 +10,7 @@ var UserSchema = new mongoose.Schema({
     }],
     groups: [mongoose.Schema.Types.ObjectId],
     permissions: [mongoose.Schema.Types.ObjectId],
+    authorizedApplications: [mongoose.Schema.Types.ObjectId],
     fields: {},
     active: {
         type: Boolean,
