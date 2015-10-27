@@ -3,9 +3,10 @@ process.env.NODE_ENV = 'testing';
 var request = require('supertest');
 var should = require('should');
 var mongoose = require('mongoose');
+var User = require('../../models/User');
 
 describe('Testing Admin actions', function () {
-    var server;
+    var server, token;
     var url = '/admin';
     before(function (done) {
         delete require.cache[require.resolve('../../server')];
@@ -13,11 +14,42 @@ describe('Testing Admin actions', function () {
         done();
     });
 
+    before(function (done) {
+        var newUser = new User({
+            username: "jjardim",
+            email: "jjardim@test.com",
+            fields: [],
+            password: "1230",
+            status: 'ACTIVE',
+            roles : ['Admin', 'User']
+        });
+
+        console.log("teste 2");
+        newUser.save(function (err, user) {
+            if (err) {
+                console.log(err);
+            } else {
+                request(server)
+                    .post('/login')
+                    .send({
+                        username: 'jjardim',
+                        password: '1230'})
+                    .expect(200)
+                    .end(function (err, res) {
+                        token = res.body.token;
+                        done();
+                    });
+            }
+        });
+    });
+
     after(function (done) {
         mongoose.connection.db.dropDatabase(function () {
             server.close(done);
         });
     });
+
+
     describe('Testing action on users', function () {
         var newUser = {
             username: "juanjardim",
@@ -29,6 +61,7 @@ describe('Testing Admin actions', function () {
         it('Create a new User', function (done) {
             request(server)
                 .post(url + '/user')
+                .set('Authorization', token)
                 .send(newUser)
                 .expect(201)
                 .end(function (err, res) {
@@ -44,6 +77,7 @@ describe('Testing Admin actions', function () {
         it('Not allow to create the same user', function (done) {
             request(server)
                 .post(url + '/user')
+                .set('Authorization', token)
                 .send(newUser)
                 .expect(500)
                 .end(function (err, res) {
@@ -57,6 +91,7 @@ describe('Testing Admin actions', function () {
         it('Get a existing user by ID', function (done) {
             request(server)
                 .get(url + '/user/' + user._id)
+                .set('Authorization', token)
                 .expect(200)
                 .end(function (err, res) {
                     should.not.exist(err);
@@ -70,6 +105,7 @@ describe('Testing Admin actions', function () {
         it('Reset password', function (done) {
             request(server)
                 .post(url + '/user/resetpassword')
+                .set('Authorization', token)
                 .send(user)
                 .expect(201)
                 .end(function (err, res) {
@@ -84,6 +120,7 @@ describe('Testing Admin actions', function () {
         it('Not Reset a password for an invalid user', function (done) {
             request(server)
                 .post(url + '/user/resetpassword')
+                .set('Authorization', token)
                 .send(newUser)
                 .expect(500)
                 .end(function (err, res) {
@@ -101,6 +138,7 @@ describe('Testing Admin actions', function () {
             };
             request(server)
                 .post(url + '/user/changestatus')
+                .set('Authorization', token)
                 .send(body)
                 .expect(200)
                 .end(function (err, res) {
@@ -122,6 +160,7 @@ describe('Testing Admin actions', function () {
         it('Create a new Group', function (done) {
             request(server)
                 .post(url + '/group')
+                .set('Authorization', token)
                 .send(newGroup)
                 .expect(201)
                 .end(function (err, res) {
@@ -136,6 +175,7 @@ describe('Testing Admin actions', function () {
         it('Not allow to create a group with the same name of an existing group', function (done) {
             request(server)
                 .post(url + '/group')
+                .set('Authorization', token)
                 .send(newGroup)
                 .expect(500)
                 .end(function (err, res) {
@@ -149,6 +189,7 @@ describe('Testing Admin actions', function () {
         it('Get a group by Id', function (done) {
             request(server)
                 .get(url + '/group/' + createdGroup._id)
+                .set('Authorization', token)
                 .expect(200)
                 .end(function (err, res) {
                     should.not.exist(err);
@@ -166,6 +207,7 @@ describe('Testing Admin actions', function () {
             };
             request(server)
                 .post(url + '/group/changestatus')
+                .set('Authorization', token)
                 .send(body)
                 .expect(201)
                 .end(function (err, res) {
@@ -192,6 +234,7 @@ describe('Testing Admin actions', function () {
             };
             request(server)
                 .post(url + '/group')
+                .set('Authorization', token)
                 .send(newGroup)
                 .expect(201)
                 .end(function (err, res) {
@@ -211,6 +254,7 @@ describe('Testing Admin actions', function () {
             };
             request(server)
                 .post(url + '/user')
+                .set('Authorization', token)
                 .send(newUser)
                 .expect(201)
                 .end(function (err, res) {
@@ -230,6 +274,7 @@ describe('Testing Admin actions', function () {
             };
             request(server)
                 .post(url + '/user/group')
+                .set('Authorization', token)
                 .send(body)
                 .expect(200)
                 .end(function (err, res) {
@@ -245,6 +290,7 @@ describe('Testing Admin actions', function () {
         it('Get all groups that the user is in', function(done){
             request(server)
                 .get(url + '/user/'+ createdUser._id + '/groups')
+                .set('Authorization', token)
                 .expect(200)
                 .end(function(err, res){
                     should.not.exist(err);
@@ -265,6 +311,7 @@ describe('Testing Admin actions', function () {
             };
             request(server)
                 .post(url + '/user/group')
+                .set('Authorization', token)
                 .send(body)
                 .expect(404)
                 .end(function (err, res) {
@@ -282,6 +329,7 @@ describe('Testing Admin actions', function () {
             };
             request(server)
                 .delete(url + '/user/group')
+                .set('Authorization', token)
                 .send(body)
                 .expect(200)
                 .end(function (err, res) {
@@ -310,6 +358,7 @@ describe('Testing Admin actions', function () {
             };
             request(server)
                 .post(url + '/permission')
+                .set('Authorization', token)
                 .send(newPermission)
                 .expect(201)
                 .end(function (err, res) {
@@ -329,6 +378,7 @@ describe('Testing Admin actions', function () {
             };
             request(server)
                 .post(url + '/user')
+                .set('Authorization', token)
                 .send(newUser)
                 .expect(201)
                 .end(function (err, res) {
@@ -348,6 +398,7 @@ describe('Testing Admin actions', function () {
             };
             request(server)
                 .post(url + '/user/permission')
+                .set('Authorization', token)
                 .send(body)
                 .expect(200)
                 .end(function (err, res) {
@@ -369,6 +420,7 @@ describe('Testing Admin actions', function () {
             };
             request(server)
                 .post(url + '/user/permission')
+                .set('Authorization', token)
                 .send(body)
                 .expect(404)
                 .end(function (err, res) {
@@ -382,6 +434,7 @@ describe('Testing Admin actions', function () {
         it('Get all permissions that the user has', function(done){
             request(server)
                 .get(url + '/user/' + createdUser._id + '/permissions')
+                .set('Authorization', token)
                 .expect(200)
                 .end(function(err, res){
                     should.not.exist(err);
@@ -400,6 +453,7 @@ describe('Testing Admin actions', function () {
             };
             request(server)
                 .delete(url + '/user/permission')
+                .set('Authorization', token)
                 .send(body)
                 .expect(200)
                 .end(function (err, res) {

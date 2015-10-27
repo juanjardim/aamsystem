@@ -19,7 +19,7 @@ var UserSchema = new mongoose.Schema({
     status: String,
     createdAt: Date,
     lastUpdatePassword: Date,
-    password: {type: String, select: false}
+    password: {type: String}
 });
 
 UserSchema.methods.comparePassword = function (password, callback) {

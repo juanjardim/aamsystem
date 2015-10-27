@@ -87,7 +87,6 @@ var applicationCtl = function () {
     var changeApplicationStatus = function (id, status) {
         var deferred = q.defer();
         var promise = deferred.promise;
-        console.log(id);
         if (validator.isNull(id)) {
             deferred.reject('Application Id cannot be null');
             return promise;

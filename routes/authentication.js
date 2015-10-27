@@ -14,7 +14,7 @@ module.exports = function(app) {
 
             res.json({
                 success: true,
-                token: jwt.generateToken(req.user)
+                token: jwt.generateToken(user)
             });
         })(req, res, next);
     });

@@ -22,7 +22,7 @@ exports.login = new LocalStrategy(strategyOptions,
                 });
             }
 
-            if(user.active === false){
+            if(user.status !== 'ACTIVE'){
                 return done(null, false, {
                     success: false,
                     error: 'User inactive, please contact admin'
