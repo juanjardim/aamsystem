@@ -15,11 +15,12 @@ describe('Testing Permission Controller', function () {
     });
     var createdPermission = {
         name: 'FirstPermission',
-        description: 'This is the first permission created'
+        description: 'This is the first permission created',
+        application: mongoose.Types.ObjectId()
     };
 
     it('Create a new Permission', function (done) {
-        PermissionCtl.createPermission(createdPermission.name, createdPermission.description).then(function (permission) {
+        PermissionCtl.createPermission(createdPermission.name, createdPermission.description, createdPermission.application).then(function (permission) {
             should.exist(permission);
             permission.name.should.be.equal(permission.name);
             createdPermission = permission;
@@ -29,8 +30,8 @@ describe('Testing Permission Controller', function () {
             done();
         });
     });
-    it('Cannot Create a new Permission with the same name', function (done) {
-        PermissionCtl.createPermission(createdPermission.name, createdPermission.description).then(function (permission) {
+     it('Cannot Create a new Permission with the same name', function (done) {
+        PermissionCtl.createPermission(createdPermission.name, createdPermission.description, createdPermission.application).then(function (permission) {
             should.not.exist(permission);
             done();
         }, function (err) {
@@ -91,7 +92,7 @@ describe('Testing Permission Controller', function () {
         });
     });
 
-    describe('User Permissions', function () {
+     describe('User Permissions', function () {
         var req, res, user, stub, permissions;
         before(function (done) {
             req = {};
@@ -99,22 +100,22 @@ describe('Testing Permission Controller', function () {
                 send: function () {
                     return this;
                 },
-                json: function(obj){
+                json: function (obj) {
                     return this;
                 },
-                status: function(st){
+                status: function (st) {
                     return this;
                 }
             };
             stub = sinon.stub(res);
 
-            PermissionCtl.createPermission('Permission Test', 'Hello World').then(function (permission) {
+            PermissionCtl.createPermission('Permission Test', 'Hello World', mongoose.Types.ObjectId()).then(function (permission) {
                 should.exist(permission);
                 permissions = [permission._id];
                 user = {
-                    _id:  mongoose.Types.ObjectId(),
+                    _id: mongoose.Types.ObjectId(),
                     name: 'User test',
-                    permissions : permissions
+                    permissions: permissions
                 };
 
                 done();
@@ -124,9 +125,9 @@ describe('Testing Permission Controller', function () {
             });
         });
 
-        it('Get all User Permissions ', function(done){
+        it('Get all User Permissions ', function (done) {
             PermissionCtl.getUserPermissions(req, stub, user);
-            process.nextTick(function(){
+            process.nextTick(function () {
                 stub.status.calledOnce.should.be.true;
                 //stub.status.calledWith(500).should.be.true;
                 stub.json.calledOnce.should.be.true;

@@ -53,29 +53,60 @@ var applicationCtl = function () {
     var getApplicationById = function (id) {
         var deferred = q.defer();
         var promise = deferred.promise;
-        if(validator.isNull(id)){
+        if (validator.isNull(id)) {
             deferred.reject('Application ID cannot be null');
             return promise;
         }
 
-        Application.findOne(id, function(err, application){
-            if(err){
+        Application.findOne(id, function (err, application) {
+            if (err) {
                 return deferred.reject(err);
+            }
+            if (validator.isNull(application)) {
+                return deferred.reject('Application not found');
             }
             deferred.resolve(application);
         });
         return promise;
     };
 
-    var getAllApplication = function(){
+    var getAllApplication = function () {
         var deferred = q.defer();
         var promise = deferred.promise;
 
-        Application.find(function(err, applications){
-            if(err){
+        Application.find(function (err, applications) {
+            if (err) {
                 return deferred.reject(err);
             }
             deferred.resolve(applications);
+        });
+
+        return promise;
+    };
+
+    var changeApplicationStatus = function (id, status) {
+        var deferred = q.defer();
+        var promise = deferred.promise;
+        console.log(id);
+        if (validator.isNull(id)) {
+            deferred.reject('Application Id cannot be null');
+            return promise;
+        }
+        if (validator.isNull(status)) {
+            deferred.reject('Status cannot be null');
+            return promise;
+        }
+
+        getApplicationById(id).then(function (application) {
+            application.status = status;
+            application.save(function (err, application) {
+                if (err) {
+                    return deferred.reject(err);
+                }
+                deferred.resolve(application);
+            })
+        }, function (err) {
+            deferred.reject(err);
         });
 
         return promise;
@@ -85,7 +116,8 @@ var applicationCtl = function () {
         createApplication: createApplication,
         getApplicationByName: getApplicationByName,
         getApplicationById: getApplicationById,
-        getAllApplication : getAllApplication
+        getAllApplication: getAllApplication,
+        changeApplicationStatus: changeApplicationStatus
     };
 };
 

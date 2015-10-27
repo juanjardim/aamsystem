@@ -70,6 +70,9 @@ var userController = function () {
             if (err) {
                 deferred.reject(err);
             } else {
+                if(validator.isNull(user)){
+                    return deferred.reject('User not exist');
+                }
                 deferred.resolve(user);
             }
         });
@@ -279,6 +282,68 @@ var userController = function () {
         return deferred.promise;
     };
 
+
+    var addApplicationToUser = function(userId, application){
+        var deferred = q.defer();
+        var promise = deferred.promise;
+        if (validator.isNull(userId)) {
+            deferred.reject('User Id cannot be null');
+            return promise;
+        }
+
+        if (validator.isNull(application)) {
+            deferred.reject('Application cannot be null');
+            return promise;
+        }
+
+        getUserById(userId).then(function (user) {
+            if (user.authorizedApplications.indexOf(application._id) > -1) {
+                return deferred.reject('User already have this application');
+            }
+            user.authorizedApplications.push(application);
+            user.save(function (err, user) {
+                if (err) {
+                    return deferred.reject(err);
+                }
+                deferred.resolve(user);
+            });
+        }, function (err) {
+            deferred.reject(err);
+        });
+
+        return promise;
+    };
+
+    var removeApplicationToUser = function(userId, application){
+        var deferred = q.defer();
+        var promise = deferred.promise;
+        if (validator.isNull(userId)) {
+            deferred.reject('User Id cannot be null');
+            return promise;
+        }
+
+        if (validator.isNull(application)) {
+            deferred.reject('Application cannot be null');
+            return promise;
+        }
+        getUserById(userId).then(function (user) {
+            if (user.authorizedApplications.indexOf(application._id) === -1) {
+                return deferred.reject('User does not have this application');
+            }
+            user.authorizedApplications.pop(application);
+            user.save(function (err, user) {
+                if (err) {
+                    return deferred.reject(err);
+                }
+                deferred.resolve(user);
+            });
+        }, function (err) {
+            deferred.reject(err);
+        });
+
+        return promise;
+    };
+
     return {
         createUser: createUser,
         getUserByUsername: getUserByUsername,
@@ -290,7 +355,9 @@ var userController = function () {
         removeGroupToUser: removeGroupToUser,
         resetPassword: resetPassword,
         addPermissionToUser: addPermissionToUser,
-        removePermissionToUser : removePermissionToUser
+        removePermissionToUser : removePermissionToUser,
+        addApplicationToUser : addApplicationToUser,
+        removeApplicationToUser : removeApplicationToUser
 
     };
 };

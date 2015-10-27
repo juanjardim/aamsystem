@@ -30,7 +30,7 @@ describe('Testing Admin actions', function () {
             request(server)
                 .post(url + '/user')
                 .send(newUser)
-                .expect(200)
+                .expect(201)
                 .end(function (err, res) {
                     should.not.exist(err);
                     should.exist(res.body.user);
@@ -71,7 +71,7 @@ describe('Testing Admin actions', function () {
             request(server)
                 .post(url + '/user/resetpassword')
                 .send(user)
-                .expect(200)
+                .expect(201)
                 .end(function (err, res) {
                     should.not.exist(err);
                     should.exist(res.body.msg);
@@ -123,7 +123,7 @@ describe('Testing Admin actions', function () {
             request(server)
                 .post(url + '/group')
                 .send(newGroup)
-                .expect(200)
+                .expect(201)
                 .end(function (err, res) {
                     should.not.exist(err);
                     should.exist(res.body.group);
@@ -167,7 +167,7 @@ describe('Testing Admin actions', function () {
             request(server)
                 .post(url + '/group/changestatus')
                 .send(body)
-                .expect(200)
+                .expect(201)
                 .end(function (err, res) {
                     should.not.exist(err);
                     should.exist(res.body.group);
@@ -193,7 +193,7 @@ describe('Testing Admin actions', function () {
             request(server)
                 .post(url + '/group')
                 .send(newGroup)
-                .expect(200)
+                .expect(201)
                 .end(function (err, res) {
                     should.not.exist(err);
                     should.exist(res.body.group);
@@ -212,7 +212,7 @@ describe('Testing Admin actions', function () {
             request(server)
                 .post(url + '/user')
                 .send(newUser)
-                .expect(200)
+                .expect(201)
                 .end(function (err, res) {
                     should.not.exist(err);
                     should.exist(res.body.user);
@@ -305,12 +305,13 @@ describe('Testing Admin actions', function () {
         before(function(done){
             var newPermission = {
                 name: 'New Permission',
-                description: 'this is a new permission'
+                description: 'this is a new permission',
+                applicationId : mongoose.Types.ObjectId()
             };
             request(server)
                 .post(url + '/permission')
                 .send(newPermission)
-                .expect(200)
+                .expect(201)
                 .end(function (err, res) {
                     should.not.exist(err);
                     should.exist(res.body.permission);
@@ -329,7 +330,7 @@ describe('Testing Admin actions', function () {
             request(server)
                 .post(url + '/user')
                 .send(newUser)
-                .expect(200)
+                .expect(201)
                 .end(function (err, res) {
                     should.not.exist(err);
                     should.exist(res.body.user);
@@ -340,7 +341,7 @@ describe('Testing Admin actions', function () {
                 });
         });
 
-        it('Add a Permission to an existing user', function (done) {
+        it('Add permission to an existing user', function (done) {
             var body = {
                 user: createdUser,
                 permission: createdPermission

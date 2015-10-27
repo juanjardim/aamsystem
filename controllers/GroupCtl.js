@@ -63,6 +63,9 @@ var groupController = function () {
             if (err) {
                 return deferred.reject(err);
             }
+            if(validator.isNull(group)){
+                return deferred.reject('Group not found');
+            }
             return deferred.resolve(group);
         });
         return deferred.promise;
@@ -148,6 +151,10 @@ var groupController = function () {
         }
 
         getGroupById(id).then(function (group) {
+            if(validator.isNull(group)){
+                return deferred.reject('Group not found');
+            }
+
             if (group.permissions.indexOf(permission._id) === -1) {
                 return deferred.reject('Group does not have this permission');
             }

@@ -10,7 +10,7 @@ module.exports = function (app) {
     router.post('/user', function (req, res) {
         var user = req.body;
         UserCtl.createUser(user.username, user.email, user.fields).then(function (user) {
-            res.status(200).json({user: user});
+            res.status(201).json({user: user});
         }, function (err) {
             res.status(500).json({error: err});
         });
@@ -31,7 +31,7 @@ module.exports = function (app) {
     router.post('/user/resetpassword', function (req, res) {
         var user = req.body;
         UserCtl.resetPassword(user._id).then(function (msg) {
-            res.status(200).json({msg: msg});
+            res.status(201).json({msg: msg});
         }, function (err) {
             res.status(500).json({error: err});
         });
@@ -51,16 +51,13 @@ module.exports = function (app) {
         var user = req.body.user;
         var group = req.body.group;
         GroupCtl.getGroupById(group._id).then(function(group){
-            if(group == null){
-                return res.status(404).json({error: 'Group not found'});
-            }
             UserCtl.addGroupToUser(user._id, group).then(function(user){
                 GroupCtl.getUserGroups(req, res, user);
             }, function(err){
                 res.status(500).json({error: err});
             });
         }, function (err) {
-            res.status(500).json({error: err});
+            res.status(404).json({error: err});
         });
     });
 
@@ -68,9 +65,6 @@ module.exports = function (app) {
         var user = req.body.user;
         var group = req.body.group;
         GroupCtl.getGroupById(group._id).then(function(group){
-            if(group == null){
-                return res.status(404).json({error: 'Group not found'});
-            }
             UserCtl.removeGroupToUser(user._id, group).then(function(user){
                 GroupCtl.getUserGroups(req, res, user);
             }, function(err){
@@ -137,7 +131,7 @@ module.exports = function (app) {
     router.post('/group', function(req, res){
         var group = req.body;
         GroupCtl.createGroup(group.name, group.description).then(function(group){
-            res.status(200).json({group: group});
+            res.status(201).json({group: group});
         }, function(err){
             res.status(500).json({error: err});
         });
@@ -146,12 +140,9 @@ module.exports = function (app) {
     router.get('/group/:id', function(req, res){
         var groupId = req.params.id;
         GroupCtl.getGroupById(groupId).then(function(group){
-            if(group == null){
-                return res.status(404).json({error: 'Group not found'});
-            }
             res.status(200).json({group: group});
         }, function(err){
-            res.status(500).json({error: err});
+            res.status(404).json({error: err});
         });
     });
 
@@ -159,7 +150,7 @@ module.exports = function (app) {
         var group = req.body.group;
         var status = req.body.status;
         GroupCtl.changeGroupStatus(group._id, status).then(function(group){
-            res.status(200).json({group: group});
+            res.status(201).json({group: group});
         }, function(err){
             res.status(500).json({error: err});
         });
@@ -167,8 +158,8 @@ module.exports = function (app) {
 
     router.post('/permission', function(req, res){
         var permission = req.body;
-        PermissionCtl.createPermission(permission.name, permission.description).then(function(permission){
-            res.status(200).json({permission:permission});
+        PermissionCtl.createPermission(permission.name, permission.description, permission.applicationId).then(function(permission){
+            res.status(201).json({permission:permission});
         }, function(err){
             res.status(500).json({error: err});
         });

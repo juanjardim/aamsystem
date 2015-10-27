@@ -74,10 +74,20 @@ describe('Testing Application Controller', function(){
         }, function(err){
             should.not.exist(err);
             done();
-        })
+
+        });
     });
 
-    it('Change status of Applications');
+    it('Change status of Applications to INACTIVE', function(done){
+        AppCtl.changeApplicationStatus(createdApp._id, 'INACTIVE').then(function(application){
+            should.exist(application);
+            application.status.should.be.equal('INACTIVE');
+            done();
+        }, function(err){
+            should.not.exist(err);
+            done();
+        });
+    });
 
     after(function(done){
         mongoose.connection.db.dropDatabase(done);

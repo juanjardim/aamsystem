@@ -5,18 +5,23 @@ var Permission = require('../models/Permission');
 
 var permissionController = function () {
 
-    var createPermission = function (name, description) {
+    var createPermission = function (name, description, application) {
         var deferred = q.defer();
+        var promise = deferred.promise;
         if (validator.isNull(name)) {
             deferred.reject('Name cannot be null');
-            return deferred.promise;
+            return promise;
         }
 
         if (validator.isNull(description)) {
             deferred.reject('Description cannot be null');
-            return deferred.promise;
+            return promise;
         }
 
+        if(validator.isNull(application)){
+            deferred.reject('Application cannot be null');
+            return promise;
+        }
 
         getPermissionByName(name).then(function (permission) {
             if (!validator.isNull(permission)) {
@@ -26,7 +31,8 @@ var permissionController = function () {
             var newPermission = new Permission({
                 name: name,
                 description: description,
-                status: 'ACTIVE'
+                status: 'ACTIVE',
+                application: application
             });
 
             newPermission.save(function (err, permission) {
@@ -39,7 +45,7 @@ var permissionController = function () {
             deferred.reject(err);
         });
 
-        return deferred.promise;
+        return promise;
     };
 
     var getPermissionByName = function (name) {
