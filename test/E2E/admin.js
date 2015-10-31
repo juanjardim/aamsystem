@@ -24,7 +24,6 @@ describe('Testing Admin actions', function () {
             roles : ['Admin', 'User']
         });
 
-        console.log("teste 2");
         newUser.save(function (err, user) {
             if (err) {
                 console.log(err);
@@ -466,6 +465,34 @@ describe('Testing Admin actions', function () {
                 });
         });
 
+    });
+
+    describe('Testing actions for applications', function(){
+        var newApp, createdApp;
+        before(function(){
+            newApp = {
+                name: 'New Application',
+                description: 'New App',
+                host: 'Local'
+            };
+        });
+
+        it('Create a new Application', function(done){
+            request(server)
+                .post(url + '/application')
+                .set('Authorization', token)
+                .send(newApp)
+                .expect(201)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should.exist(res.body.application);
+                    createdApp = res.body.application;
+                    createdApp.name.should.be.equal(newApp.name);
+                    should.exist(createdApp.jwtSecret);
+                    should.exist(createdApp.jwtToken);
+                    done();
+                });
+        });
     });
 
 });

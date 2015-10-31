@@ -23,7 +23,7 @@ module.exports = function (app) {
             if(result.payload.roles.indexOf('Admin') === -1){
                 return res.status(401).json({error: 'You are not authorized'});
             }
-            
+
             next();
         } else {
             return res.status(403).json({
@@ -192,7 +192,7 @@ module.exports = function (app) {
 
     router.post('/application', function (req, res) {
         var application = req.body;
-        ApplicationCtl.createApplication(permission.name, permission.description, permission.dns).then(function (application) {
+        ApplicationCtl.createApplication(application.name, application.description, application.host).then(function (application) {
             res.status(201).json({application: application});
         }, function (err) {
             res.status(500).json({error: err});

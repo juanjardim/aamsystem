@@ -11,7 +11,7 @@ describe('Testing Application Controller', function(){
     var newApplication = {
         name: 'My New App',
         description: 'This is an app',
-        dns: 'myApp.com'
+        host: 'myApp.com'
     };
     var createdApp;
     before(function(done){
@@ -22,7 +22,7 @@ describe('Testing Application Controller', function(){
     });
 
     it('Create a new Applications', function(done){
-        AppCtl.createApplication(newApplication.name, newApplication.description, newApplication.dns).then(function(application){
+        AppCtl.createApplication(newApplication.name, newApplication.description, newApplication.host).then(function(application){
             should.exist(application);
             createdApp = application;
             application.name.should.be.eql(newApplication.name);
@@ -81,7 +81,27 @@ describe('Testing Application Controller', function(){
     it('Change status of Applications to INACTIVE', function(done){
         AppCtl.changeApplicationStatus(createdApp._id, 'INACTIVE').then(function(application){
             should.exist(application);
-            application.status.should.be.equal('INACTIVE');
+            application.status.should.be.eql('INACTIVE');
+            done();
+        }, function(err){
+            should.not.exist(err);
+            done();
+        });
+    });
+
+    it('Generate a new JWT Secret', function(done){
+        AppCtl.generateNewJWTSecret(createdApp._id).then(function(jwtSecret){
+            should.exist(jwtSecret);
+            done();
+        }, function(err){
+            should.not.exist(err);
+            done();
+        });
+    });
+
+    it('Get the JWT Secret by application ID', function(done){
+        AppCtl.getJWTSecret(createdApp._id).then(function(jwtSecret){
+            should.exist(jwtSecret);
             done();
         }, function(err){
             should.not.exist(err);

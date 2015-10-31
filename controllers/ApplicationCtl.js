@@ -2,10 +2,12 @@
 var q = require('q');
 var validator = require('validator');
 var Application = require('../models/Application');
+var jwt = require('../services/jwt');
+var crypto = require('crypto');
 
 var applicationCtl = function () {
 
-    var createApplication = function (name, description, dns) {
+    var createApplication = function (name, description, host) {
         var deferred = q.defer();
         var promise = deferred.promise;
 
@@ -13,16 +15,22 @@ var applicationCtl = function () {
             if (!validator.isNull(application)) {
                 return deferred.reject('Application already exist');
             }
+            var tokenSecret = crypto.randomBytes(7).toString('hex');
             var newApplication = new Application({
                 name: name,
                 description: description,
-                dns: dns
+                host: host,
+                jwtSecret: tokenSecret
             });
 
             newApplication.save(function (err, application) {
                 if (err) {
                     deferred.reject(err);
                 }
+                application = application.toJSON();
+                application.jwtSecret = tokenSecret;
+                application.jwtToken = jwt.generateAppToken(application);
+
                 deferred.resolve(application);
             });
 
@@ -45,7 +53,10 @@ var applicationCtl = function () {
             if (err) {
                 return deferred.reject(err);
             }
-            deferred.resolve(application);
+            if (application != undefined)
+                deferred.resolve(application.toJSON());
+            else
+                deferred.resolve(application);
         });
         return promise;
     };
@@ -58,7 +69,7 @@ var applicationCtl = function () {
             return promise;
         }
 
-        Application.findOne(id, function (err, application) {
+        Application.findOne(id, {jwtSecret: -1}, function (err, application) {
             if (err) {
                 return deferred.reject(err);
             }
@@ -102,7 +113,7 @@ var applicationCtl = function () {
                 if (err) {
                     return deferred.reject(err);
                 }
-                deferred.resolve(application);
+                deferred.resolve(application.toJSON());
             })
         }, function (err) {
             deferred.reject(err);
@@ -111,12 +122,56 @@ var applicationCtl = function () {
         return promise;
     };
 
+    var getJWTSecret = function (id) {
+        var deferred = q.defer();
+        var promise = deferred.promise;
+        if(validator.isNull(id)){
+            deferred.reject('Application Id cannot be null');
+            return promise;
+        }
+        Application.findOne(id, function (err, application) {
+            if (err) {
+                return deferred.reject(err);
+            }
+            if (validator.isNull(application)) {
+                return deferred.reject('Application not found');
+            }
+            deferred.resolve(application.jwtSecret);
+        });
+
+        return promise;
+    };
+
+    var generateNewJWTSecret = function (id) {
+        var deferred = q.defer();
+        var promise = deferred.promise;
+        if (validator.isNull(id)) {
+            deferred.reject('Application Id cannot be null');
+            return promise;
+        }
+
+        getApplicationById(id).then(function (application) {
+            application.jwtSecret = crypto.randomBytes(7).toString('hex');
+            application.save(function (err, application) {
+                if (err) {
+                    return deferred.reject(err);
+                }
+                deferred.resolve(application.jwtSecret);
+            });
+        });
+
+        return promise;
+
+    };
+
     return {
         createApplication: createApplication,
         getApplicationByName: getApplicationByName,
         getApplicationById: getApplicationById,
         getAllApplication: getAllApplication,
-        changeApplicationStatus: changeApplicationStatus
+        changeApplicationStatus: changeApplicationStatus,
+        generateNewJWTSecret: generateNewJWTSecret,
+        getJWTSecret: getJWTSecret
     };
 };
 

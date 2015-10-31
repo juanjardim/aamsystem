@@ -7,7 +7,8 @@ var ApplicationSchema = new mongoose.Schema({
     status: String,
     createdAt: Date,
     lastUpdate: Date,
-    dns: String
+    host: String,
+    jwtSecret: String
 });
 
 ApplicationSchema.pre('save', function(next){
@@ -19,5 +20,11 @@ ApplicationSchema.pre('save', function(next){
     }
     next();
 });
+
+ApplicationSchema.methods.toJSON = function () {
+    var application = this.toObject();
+    delete application.jwtSecret;
+    return application;
+};
 
 module.exports = mongoose.model('Application', ApplicationSchema);

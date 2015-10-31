@@ -23,6 +23,7 @@ var server = app.listen(config.port);
 require('./routes/main')(app);
 require('./routes/admin')(app);
 require('./routes/authentication')(app);
+require('./routes/application')(app);
 
 console.log('Magic happens on port: ' + config.port + '. Environment:' + config.environment);
 
