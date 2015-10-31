@@ -8,9 +8,9 @@ describe('Testing JWT service', function(){
     describe('Generate JWT for user', function(){
        var user, token;
         before(function(){
-            var ObjectId = mongoose.Types.ObjectId();
+            var objectId = mongoose.Types.ObjectId();
             user = {
-                _id : ObjectId
+                _id : objectId
             };
         });
 
@@ -27,10 +27,24 @@ describe('Testing JWT service', function(){
 
     });
 
-
     describe('Generate JWT for application', function(){
-        it('Return a valid JWT for an application');
+        var application, token;
+        before(function(){
+            var objectId = mongoose.Types.ObjectId();
+            application = {
+                _id: objectId,
+                host: '127.0.0.1:3030'
+            };
+        });
+        it('Return a valid JWT for an application', function(){
+            token = jwtService.generateAppToken(application);
+            var decoded = jwt.decode(token, config.jwtTokenSecret, true, config.jwtAlgorithm);
+            decoded.sub.should.be.eql(application._id.toString());
+        });
+
+        it('Validate application Token', function(){
+            var request = jwtService.validateToken(token);
+            request.errorId.should.be.eql(0);
+        });
     });
-
-
 });

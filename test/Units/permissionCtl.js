@@ -30,7 +30,7 @@ describe('Testing Permission Controller', function () {
             done();
         });
     });
-     it('Cannot Create a new Permission with the same name', function (done) {
+    it('Cannot Create a new Permission with the same name', function (done) {
         PermissionCtl.createPermission(createdPermission.name, createdPermission.description, createdPermission.application).then(function (permission) {
             should.not.exist(permission);
             done();
@@ -92,7 +92,7 @@ describe('Testing Permission Controller', function () {
         });
     });
 
-     describe('User Permissions', function () {
+    describe('User Permissions', function () {
         var req, res, user, stub, permissions;
         before(function (done) {
             req = {};

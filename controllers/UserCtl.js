@@ -344,6 +344,20 @@ var userController = function () {
         return promise;
     };
 
+    var getUsersByApplicationId = function(applicationId){
+        var deferred = q.defer();
+        var promise = deferred.promise;
+
+        User.find({authorizedApplications: applicationId}, function (err, users) {
+            if (err) {
+                return deferred.reject(err);
+            }
+            deferred.resolve(users);
+        });
+
+        return promise;
+    };
+
     return {
         createUser: createUser,
         getUserByUsername: getUserByUsername,
@@ -357,7 +371,8 @@ var userController = function () {
         addPermissionToUser: addPermissionToUser,
         removePermissionToUser : removePermissionToUser,
         addApplicationToUser : addApplicationToUser,
-        removeApplicationToUser : removeApplicationToUser
+        removeApplicationToUser : removeApplicationToUser,
+        getUsersByApplicationId : getUsersByApplicationId
 
     };
 };

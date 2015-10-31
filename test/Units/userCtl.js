@@ -324,6 +324,18 @@ describe('Testing User Controller', function () {
             });
         });
 
+
+        it('Get All users that has access to specific application', function(done){
+            UserCtl.getUsersByApplicationId(application._id).then(function(users){
+                should.exist(users);
+                users.should.have.length(1);
+                done();
+            }, function(err){
+                should.not.exist(err);
+                done();
+            });
+        });
+
         it('Cannot be added an application that the user already have', function (done) {
             UserCtl.addApplicationToUser(createdUser._id, application).then(function (user) {
                 should.exist(user);
@@ -346,6 +358,7 @@ describe('Testing User Controller', function () {
                 done();
             });
         });
+
     });
 
     after(function (done) {

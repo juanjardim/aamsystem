@@ -62,6 +62,22 @@ describe('Testing Application Routes Actions', function () {
                     done();
                 });
         });
+
+        it('Get all Application Permission for specific user');
+
+        it('Change user password', function(done){
+            request(server)
+                .post(url + '/changepassword')
+                .set('Authorization', createdApp.jwtToken)
+                .send({userId: createdUser._id, password: 'A1430abcd'})
+                .expect(200)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should.exist(res.body.result);
+                    res.body.result.should.be.eql('Password changed');
+                    done();
+                });
+        });
     });
 
     describe('Fail authentication when the user not has access to application', function(){

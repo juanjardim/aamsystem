@@ -34,7 +34,7 @@ describe('Testing Application Controller', function(){
     });
 
     it('Get all Applications', function(done){
-        AppCtl.getAllApplication().then(function(applications){
+        AppCtl.getAllApplications().then(function(applications){
             should.exist(applications);
             applications.should.have.length(1);
             done();
@@ -43,6 +43,18 @@ describe('Testing Application Controller', function(){
             done();
         });
     });
+
+    it('Get all Applications By Ids', function(done){
+        AppCtl.getAllApplicationsByIds([createdApp._id]).then(function(applications){
+            should.exist(applications);
+            applications.should.have.length(1);
+            done();
+        }, function(err){
+            should.not.exit(err);
+            done();
+        });
+    });
+
 
     it('Get Application By Id', function(done){
         AppCtl.getApplicationById(createdApp._id).then(function(application){
@@ -78,17 +90,6 @@ describe('Testing Application Controller', function(){
         });
     });
 
-    it('Change status of Applications to INACTIVE', function(done){
-        AppCtl.changeApplicationStatus(createdApp._id, 'INACTIVE').then(function(application){
-            should.exist(application);
-            application.status.should.be.eql('INACTIVE');
-            done();
-        }, function(err){
-            should.not.exist(err);
-            done();
-        });
-    });
-
     it('Generate a new JWT Secret', function(done){
         AppCtl.generateNewJWTSecret(createdApp._id).then(function(jwtSecret){
             should.exist(jwtSecret);
@@ -105,6 +106,39 @@ describe('Testing Application Controller', function(){
             done();
         }, function(err){
             should.not.exist(err);
+            done();
+        });
+    });
+
+    it('Change status of Applications to INACTIVE', function(done){
+        AppCtl.changeApplicationStatus(createdApp._id, 'INACTIVE').then(function(application){
+            should.exist(application);
+            application.status.should.be.eql('INACTIVE');
+            done();
+        }, function(err){
+            should.not.exist(err);
+            done();
+        });
+    });
+
+    it('Cannot generate a new JWT Secret when the application status != ACTIVE', function(done){
+        AppCtl.generateNewJWTSecret(createdApp._id).then(function(jwtSecret){
+            should.not.exist(jwtSecret);
+            done();
+        }, function(err){
+            should.exist(err);
+            err.should.be.eql('Cannot generate a new secret. Application is INACTIVE');
+            done();
+        });
+    });
+
+    it('Cannot get the JWT Secret by application ID when the application status != ACTIVE', function(done){
+        AppCtl.getJWTSecret(createdApp._id).then(function(jwtSecret){
+            should.not.exist(jwtSecret);
+            done();
+        }, function(err){
+            should.exist(err);
+            err.should.be.eql('Application is INACTIVE');
             done();
         });
     });

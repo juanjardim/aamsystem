@@ -16,12 +16,12 @@ describe('Testing Admin actions', function () {
 
     before(function (done) {
         var newUser = new User({
-            username: "jjardim",
-            email: "jjardim@test.com",
+            username: "dummy",
+            email: "dummy@test.com",
             fields: [],
             password: "1230",
             status: 'ACTIVE',
-            roles : ['Admin', 'User']
+            roles: ['Admin', 'User']
         });
 
         newUser.save(function (err, user) {
@@ -31,8 +31,9 @@ describe('Testing Admin actions', function () {
                 request(server)
                     .post('/login')
                     .send({
-                        username: 'jjardim',
-                        password: '1230'})
+                        username: 'dummy',
+                        password: '1230'
+                    })
                     .expect(200)
                     .end(function (err, res) {
                         token = res.body.token;
@@ -51,8 +52,8 @@ describe('Testing Admin actions', function () {
 
     describe('Testing action on users', function () {
         var newUser = {
-            username: "juanjardim",
-            email: "juanjardim@gmail.com",
+            username: "myUser",
+            email: "myUser@gmail.com",
             fields: []
         };
         var user;
@@ -69,6 +70,19 @@ describe('Testing Admin actions', function () {
                     user = res.body.user;
                     user.username.should.equal(newUser.username);
                     user.active.should.be.true();
+                    done();
+                });
+        });
+
+        it('Get all users', function(done){
+            request(server)
+                .get(url + '/users')
+                .set('Authorization', token)
+                .expect(200)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should.exist(res.body.users);
+                    res.body.users.should.have.length(2);
                     done();
                 });
         });
@@ -218,6 +232,19 @@ describe('Testing Admin actions', function () {
                     done();
                 });
         });
+
+        it('Get all Groups', function(done){
+            request(server)
+                .get(url + '/groups')
+                .set('Authorization', token)
+                .expect(200)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should.exist(res.body.groups);
+                    res.body.groups.should.have.length(1);
+                    done();
+                });
+        });
     });
 
     describe('Testing action for users and groups', function () {
@@ -226,7 +253,7 @@ describe('Testing Admin actions', function () {
             mongoose.connection.db.dropDatabase(done);
         });
 
-        before(function(done){
+        before(function (done) {
             var newGroup = {
                 name: 'New Group',
                 description: 'this is a new group'
@@ -245,7 +272,7 @@ describe('Testing Admin actions', function () {
                 });
         });
 
-        before(function(done){
+        before(function (done) {
             var newUser = {
                 username: "juanjardim",
                 email: "juanjardim@gmail.com",
@@ -286,12 +313,12 @@ describe('Testing Admin actions', function () {
                 });
         });
 
-        it('Get all groups that the user is in', function(done){
+        it('Get all groups that the user is in', function (done) {
             request(server)
-                .get(url + '/user/'+ createdUser._id + '/groups')
+                .get(url + '/user/' + createdUser._id + '/groups')
                 .set('Authorization', token)
                 .expect(200)
-                .end(function(err, res){
+                .end(function (err, res) {
                     should.not.exist(err);
                     should.exist(res.body.user);
                     var requestedUser = res.body.user;
@@ -301,7 +328,7 @@ describe('Testing Admin actions', function () {
                 });
         });
 
-        it('Return an error when adding a nonexistent group', function(done){
+        it('Return an error when adding a nonexistent group', function (done) {
             var body = {
                 user: createdUser,
                 group: {
@@ -321,7 +348,7 @@ describe('Testing Admin actions', function () {
                 });
         });
 
-        it('Remove a Group', function(done){
+        it('Remove a Group', function (done) {
             var body = {
                 user: createdUser,
                 group: createdGroup
@@ -343,17 +370,17 @@ describe('Testing Admin actions', function () {
 
     });
 
-    describe('Testing action for users and permissionos', function () {
+    describe('Testing action for users and permissions', function () {
         var createdPermission, createdUser;
         before(function (done) {
             mongoose.connection.db.dropDatabase(done);
         });
 
-        before(function(done){
+        before(function (done) {
             var newPermission = {
                 name: 'New Permission',
                 description: 'this is a new permission',
-                applicationId : mongoose.Types.ObjectId()
+                applicationId: mongoose.Types.ObjectId()
             };
             request(server)
                 .post(url + '/permission')
@@ -361,18 +388,15 @@ describe('Testing Admin actions', function () {
                 .send(newPermission)
                 .expect(201)
                 .end(function (err, res) {
-                    should.not.exist(err);
-                    should.exist(res.body.permission);
                     createdPermission = res.body.permission;
-                    createdPermission.name.should.be.equal(newPermission.name);
                     done();
                 });
         });
 
-        before(function(done){
+        before(function (done) {
             var newUser = {
-                username: "juanjardim",
-                email: "juanjardim@gmail.com",
+                username: "dummy",
+                email: "dummy@test.com",
                 fields: []
             };
             request(server)
@@ -381,11 +405,7 @@ describe('Testing Admin actions', function () {
                 .send(newUser)
                 .expect(201)
                 .end(function (err, res) {
-                    should.not.exist(err);
-                    should.exist(res.body.user);
                     createdUser = res.body.user;
-                    createdUser.username.should.equal(newUser.username);
-                    createdUser.active.should.be.true();
                     done();
                 });
         });
@@ -410,7 +430,7 @@ describe('Testing Admin actions', function () {
                 });
         });
 
-        it('Return an error when adding a nonexistent permission', function(done){
+        it('Return an error when adding a nonexistent permission', function (done) {
             var body = {
                 user: createdUser,
                 permission: {
@@ -430,12 +450,12 @@ describe('Testing Admin actions', function () {
                 });
         });
 
-        it('Get all permissions that the user has', function(done){
+        it('Get all permissions that the user has', function (done) {
             request(server)
                 .get(url + '/user/' + createdUser._id + '/permissions')
                 .set('Authorization', token)
                 .expect(200)
-                .end(function(err, res){
+                .end(function (err, res) {
                     should.not.exist(err);
                     should.exist(res.body.user);
                     var requestedUser = res.body.user;
@@ -445,7 +465,7 @@ describe('Testing Admin actions', function () {
                 });
         });
 
-        it('Remove a Permission from user', function(done){
+        it('Remove a Permission from user', function (done) {
             var body = {
                 user: createdUser,
                 permission: createdPermission
@@ -467,9 +487,9 @@ describe('Testing Admin actions', function () {
 
     });
 
-    describe('Testing actions for applications', function(){
+    describe('Testing actions for applications', function () {
         var newApp, createdApp;
-        before(function(){
+        before(function () {
             newApp = {
                 name: 'New Application',
                 description: 'New App',
@@ -477,7 +497,7 @@ describe('Testing Admin actions', function () {
             };
         });
 
-        it('Create a new Application', function(done){
+        it('Create a new Application', function (done) {
             request(server)
                 .post(url + '/application')
                 .set('Authorization', token)
@@ -490,6 +510,172 @@ describe('Testing Admin actions', function () {
                     createdApp.name.should.be.equal(newApp.name);
                     should.exist(createdApp.jwtSecret);
                     should.exist(createdApp.jwtToken);
+                    done();
+                });
+        });
+
+        it('Get Application by Id', function (done) {
+            request(server)
+                .get(url + '/application/' + createdApp._id)
+                .set('Authorization', token)
+                .expect(200)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should.exist(res.body.application);
+                    var application = res.body.application;
+                    application.name.should.be.equal(newApp.name);
+                    should.not.exist(application.jwtSecret);
+                    done();
+                });
+        });
+
+        it('Generate a new JWT Secret', function (done) {
+            request(server)
+                .post(url + '/application/newJwtSecret')
+                .send({application: createdApp})
+                .set('Authorization', token)
+                .expect(200)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should.exist(res.body.secret);
+                    done();
+                });
+        });
+
+        it('Change status to INACTIVE', function (done) {
+            var body = {
+                application: createdApp,
+                status: 'INACTIVE'
+            };
+            request(server)
+                .post(url + '/application/changestatus')
+                .set('Authorization', token)
+                .send(body)
+                .expect(200)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should.exist(res.body.application);
+                    res.body.application.status.should.be.equal('INACTIVE');
+                    done();
+                });
+        });
+
+        it('Get All Applications', function (done) {
+            request(server)
+                .get(url + '/applications')
+                .expect(200)
+                .set('Authorization', token)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should.exist(res.body.applications);
+                    res.body.applications.should.have.length(1);
+                    done();
+                });
+        });
+
+        it('Get all users that has access to specific application', function (done) {
+            request(server)
+                .get(url + '/application/' + createdApp._id + '/users')
+                .set('Authorization', token)
+                .expect(200)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should.exist(res.body.users);
+                    res.body.users.should.have.length(0);
+                    done();
+                });
+        });
+
+        it('Get all application permission');
+    });
+
+    describe('Testing action for users and applications', function () {
+        var createdApp, createdUser;
+        before(function (done) {
+            mongoose.connection.db.dropDatabase(done);
+        });
+
+        before(function (done) {
+            var newApplication = {
+                name: 'New Application',
+                description: 'this is a new application',
+                host: '127.0.0.1:3030'
+            };
+            request(server)
+                .post(url + '/application')
+                .set('Authorization', token)
+                .send(newApplication)
+                .expect(201)
+                .end(function (err, res) {
+                    createdApp = res.body.application;
+                    done();
+                });
+        });
+
+        before(function (done) {
+            var newUser = {
+                username: "userAppDummy",
+                email: "userAppDummy@test.com",
+                fields: []
+            };
+            request(server)
+                .post(url + '/user')
+                .set('Authorization', token)
+                .send(newUser)
+                .expect(201)
+                .end(function (err, res) {
+                    createdUser = res.body.user;
+                    done();
+                });
+        });
+
+        it('Add application to user', function (done) {
+            var body = {
+                user: createdUser,
+                application: createdApp
+            };
+            request(server)
+                .post(url + '/user/application')
+                .set('Authorization', token)
+                .send(body)
+                .expect(200)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should.exist(res.body.user);
+                    var requestedUser = res.body.user;
+                    requestedUser._id.should.be.eql(createdUser._id);
+                    requestedUser.authorizedApplications.should.have.length(1);
+                    done();
+                });
+        });
+
+        it('Get all users that has access to specific application', function (done) {
+            request(server)
+                .get(url + '/application/' + createdApp._id + '/users')
+                .set('Authorization', token)
+                .expect(200)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should.exist(res.body.users);
+                    res.body.users.should.have.length(1);
+                    done();
+                });
+        });
+
+        it('Remove application to user', function (done) {
+            var body = {
+                user: createdUser,
+                application: createdApp
+            };
+            request(server)
+                .delete(url + '/user/application')
+                .set('Authorization', token)
+                .send(body)
+                .expect(200)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should.exist(res.body.user);
+                    res.body.user.authorizedApplications.should.have.length(0);
                     done();
                 });
         });

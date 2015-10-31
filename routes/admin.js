@@ -20,7 +20,7 @@ module.exports = function (app) {
                 return res.status(401).json({error: result.errorText});
             }
 
-            if(result.payload.roles.indexOf('Admin') === -1){
+            if (result.payload.roles.indexOf('Admin') === -1) {
                 return res.status(401).json({error: 'You are not authorized'});
             }
 
@@ -30,6 +30,14 @@ module.exports = function (app) {
                 error: 'No token provided'
             });
         }
+    });
+
+    router.get('/users', function (req, res) {
+        UserCtl.getAllUsers().then(function (users) {
+            res.status(200).json({users: users});
+        }, function (err) {
+            res.status(500).json({error: err});
+        });
     });
 
     router.post('/user', function (req, res) {
@@ -153,6 +161,32 @@ module.exports = function (app) {
         });
     });
 
+    router.post('/user/application', function (req, res) {
+        var user = req.body.user;
+        var application = req.body.application;
+        ApplicationCtl.getApplicationById(application._id).then(function (application) {
+            UserCtl.addApplicationToUser(user._id, application).then(function (user) {
+                res.status(200).json({user: user});
+            })
+        }, function (err) {
+            res.status(404).json({error: err});
+        })
+    });
+
+    router.delete('/user/application', function (req, res) {
+        var user = req.body.user;
+        var application = req.body.application;
+        ApplicationCtl.getApplicationById(application._id).then(function (application) {
+            UserCtl.removeApplicationToUser(user._id, application).then(function (user) {
+                res.status(200).json({user: user});
+            }, function (err) {
+                res.status(500).json({error: err});
+            });
+        }, function (err) {
+            res.status(500).json({error: err});
+        });
+    });
+
     router.post('/group', function (req, res) {
         var group = req.body;
         GroupCtl.createGroup(group.name, group.description).then(function (group) {
@@ -166,6 +200,14 @@ module.exports = function (app) {
         var groupId = req.params.id;
         GroupCtl.getGroupById(groupId).then(function (group) {
             res.status(200).json({group: group});
+        }, function (err) {
+            res.status(404).json({error: err});
+        });
+    });
+
+    router.get('/groups', function (req, res) {
+        GroupCtl.getAllGroups().then(function (groups) {
+            res.status(200).json({groups: groups});
         }, function (err) {
             res.status(404).json({error: err});
         });
@@ -190,10 +232,55 @@ module.exports = function (app) {
         });
     });
 
+    router.get('/applications', function (req, res) {
+        ApplicationCtl.getAllApplications().then(function (applications) {
+            res.status(200).json({applications: applications});
+        }, function (err) {
+            res.status(500).json({error: err});
+        });
+    });
+
     router.post('/application', function (req, res) {
         var application = req.body;
         ApplicationCtl.createApplication(application.name, application.description, application.host).then(function (application) {
             res.status(201).json({application: application});
+        }, function (err) {
+            res.status(500).json({error: err});
+        });
+    });
+
+    router.get('/application/:id', function (req, res) {
+        var applicationId = req.params.id;
+        ApplicationCtl.getApplicationById(applicationId).then(function (application) {
+            res.status(200).json({application: application});
+        }, function (err) {
+            res.status(500).json({error: err});
+        });
+    });
+
+    router.post('/application/newJwtSecret', function (req, res) {
+        var application = req.body.application;
+        ApplicationCtl.generateNewJWTSecret(application._id).then(function (secret) {
+            res.status(200).json({secret: secret});
+        }, function (err) {
+            res.status(500).json({error: err});
+        });
+    });
+
+    router.post('/application/changestatus', function (req, res) {
+        var application = req.body.application;
+        var status = req.body.status;
+        ApplicationCtl.changeApplicationStatus(application._id, status).then(function (application) {
+            res.status(200).json({application: application});
+        }, function (err) {
+            res.status(500).json({error: err});
+        });
+    });
+
+    router.get('/application/:id/users', function (req, res) {
+        var applicationId = req.params.id;
+        UserCtl.getUsersByApplicationId(applicationId).then(function (users) {
+            res.status(200).json({users: users});
         }, function (err) {
             res.status(500).json({error: err});
         });
