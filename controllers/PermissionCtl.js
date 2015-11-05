@@ -1,6 +1,6 @@
 'use strict';
 var q = require('q');
-var validator = require('validator');
+var _ = require('underscore');
 var Permission = require('../models/Permission');
 
 var permissionController = function () {
@@ -8,23 +8,23 @@ var permissionController = function () {
     var createPermission = function (name, description, application) {
         var deferred = q.defer();
         var promise = deferred.promise;
-        if (validator.isNull(name)) {
+        if (_.isNull(name)) {
             deferred.reject('Name cannot be null');
             return promise;
         }
 
-        if (validator.isNull(description)) {
+        if (_.isNull(description)) {
             deferred.reject('Description cannot be null');
             return promise;
         }
 
-        if(validator.isNull(application)){
+        if(_.isNull(application)){
             deferred.reject('Application cannot be null');
             return promise;
         }
 
         getPermissionByName(name).then(function (permission) {
-            if (!validator.isNull(permission)) {
+            if (!_.isNull(permission)) {
                 return deferred.reject('Permission already exist');
             }
 
@@ -50,7 +50,7 @@ var permissionController = function () {
 
     var getPermissionByName = function (name) {
         var deferred = q.defer();
-        if (validator.isNull(name)) {
+        if (_.isNull(name)) {
             deferred.reject('Permission Name cannot be null');
             return deferred.promise;
         }
@@ -67,7 +67,7 @@ var permissionController = function () {
 
     var getPermissionById = function (id) {
         var deferred = q.defer();
-        if (validator.isNull(id)) {
+        if (_.isNull(id)) {
             deferred.reject('Permission ID cannot be null');
             return deferred.promise;
         }
@@ -84,12 +84,12 @@ var permissionController = function () {
 
     var changePermissionStatus = function (id, status) {
         var deferred = q.defer();
-        if (validator.isNull(id)) {
+        if (_.isNull(id)) {
             deferred.reject('Permission Id cannot be null');
             return deferred.promise;
         }
 
-        if (validator.isNull(status)) {
+        if (_.isNull(status)) {
             deferred.reject('Status cannot be null');
             return deferred.promise;
         }
@@ -124,7 +124,7 @@ var permissionController = function () {
         var deferred = q.defer();
         var promise = deferred.promise;
 
-        if (validator.isNull(ids)) {
+        if (_.isNull(ids)) {
             deferred.resolve([]);
             return promise;
         }
@@ -139,15 +139,23 @@ var permissionController = function () {
         return promise;
     };
 
-    var getUserPermissions = function(req, res, user){
-        getPermissionsById(user.permissions).then(function(permissions){
-            user = user.toJSON();
-            user.permissions = permissions;
-            res.status(200).json({user: user});
-        }, function(err){
-            res.status(500).json({error: err});
+    var getAllPermissionsByApplication = function(applicationId){
+        var deferred = q.defer();
+        var promise = deferred.promise;
+        if(_.isNull(applicationId)){
+            deferred.reject('Application Id Cannot be null');
+            return promise;
+        }
+
+        Permission.find({application : applicationId}, function(err, permissions){
+            if(err){
+                return deferred.reject(err);
+            }
+            deferred.resolve(permissions);
         });
+        return promise;
     };
+
 
     return {
         getPermissionById: getPermissionById,
@@ -156,7 +164,7 @@ var permissionController = function () {
         changePermissionStatus: changePermissionStatus,
         getAllPermissions: getAllPermissions,
         getPermissionsById: getPermissionsById,
-        getUserPermissions : getUserPermissions
+        getAllPermissionsByApplication: getAllPermissionsByApplication
     };
 };
 

@@ -4,8 +4,7 @@ var router = express.Router();
 var passport = require('passport');
 var ApplicationCtl = require('../controllers/ApplicationCtl');
 var UserCtl = require('../controllers/UserCtl');
-//var GroupCtl = require('../controllers/GroupCtl');
-//var PermissionCtl = require('../controllers/PermissionCtl');
+var modelMiddleware = require('../services/modelsMiddleware');
 var jwt = require('../services/jwt');
 
 module.exports = function (app) {
@@ -65,6 +64,15 @@ module.exports = function (app) {
             res.status(200).json({result: message});
         }, function(err){
             console.log(err);
+            res.status(500).json({error: err});
+        });
+    });
+
+    router.get('/user/:id/permissions', function(req, res){
+        var userId = req.params.id;
+        modelMiddleware.getAllUserInfo(userId, req.applicationId).then(function (user) {
+            res.status(200).json({permissions: user.permissions});
+        }, function (err) {
             res.status(500).json({error: err});
         });
     });

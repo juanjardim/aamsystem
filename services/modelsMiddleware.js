@@ -1,6 +1,5 @@
 'use strict';
 var q = require('q');
-var validator = require('validator');
 var _ = require('underscore');
 
 var UserCtl = require('../controllers/UserCtl');

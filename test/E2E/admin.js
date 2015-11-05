@@ -450,21 +450,6 @@ describe('Testing Admin actions', function () {
                 });
         });
 
-        it('Get all permissions that the user has', function (done) {
-            request(server)
-                .get(url + '/user/' + createdUser._id + '/permissions')
-                .set('Authorization', token)
-                .expect(200)
-                .end(function (err, res) {
-                    should.not.exist(err);
-                    should.exist(res.body.user);
-                    var requestedUser = res.body.user;
-                    requestedUser._id.should.be.eql(createdUser._id);
-                    requestedUser.permissions.should.have.length(1);
-                    done();
-                });
-        });
-
         it('Remove a Permission from user', function (done) {
             var body = {
                 user: createdUser,
@@ -586,7 +571,18 @@ describe('Testing Admin actions', function () {
                 });
         });
 
-        it('Get all application permission');
+        it('Get all application permission', function(done){
+            request(server)
+                .get(url + '/application/' + createdApp._id + '/permissions')
+                .set('Authorization', token)
+                .expect(200)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should.exist(res.body.permissions);
+                    res.body.permissions.should.have.length(0);
+                    done();
+                });
+        });
     });
 
     describe('Testing action for users and applications', function () {

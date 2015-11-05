@@ -5,6 +5,7 @@ var UserCtl = require('../controllers/UserCtl');
 var GroupCtl = require('../controllers/GroupCtl');
 var PermissionCtl = require('../controllers/PermissionCtl');
 var ApplicationCtl = require('../controllers/ApplicationCtl');
+var modelMiddleware = require('../services/modelsMiddleware');
 var jwt = require('../services/jwt');
 
 module.exports = function (app) {
@@ -43,7 +44,11 @@ module.exports = function (app) {
     router.post('/user', function (req, res) {
         var user = req.body;
         UserCtl.createUser(user.username, user.email, user.fields).then(function (user) {
-            res.status(201).json({user: user});
+            modelMiddleware.getAllUserInfo(user._id).then(function(user){
+                res.status(201).json({user: user});
+            }, function (err) {
+                res.status(500).json({error: err});
+            });
         }, function (err) {
             res.status(500).json({error: err});
         });
@@ -55,7 +60,11 @@ module.exports = function (app) {
             if (user == null) {
                 return res.status(404).json({error: 'User not found'});
             }
-            res.status(200).json({user: user});
+            modelMiddleware.getAllUserInfo(user._id).then(function(user){
+                res.status(200).json({user: user});
+            }, function (err) {
+                res.status(500).json({error: err});
+            });
         }, function (err) {
             res.status(500).json({error: err});
         })
@@ -74,7 +83,11 @@ module.exports = function (app) {
         var user = req.body.user;
         var status = req.body.status;
         UserCtl.changeUserStatus(user._id, status).then(function (user) {
-            res.status(200).json({user: user});
+            modelMiddleware.getAllUserInfo(user._id).then(function(user){
+                res.status(200).json({user: user});
+            }, function (err) {
+                res.status(500).json({error: err});
+            });
         }, function (err) {
             res.status(500).json({error: err});
         });
@@ -85,7 +98,11 @@ module.exports = function (app) {
         var group = req.body.group;
         GroupCtl.getGroupById(group._id).then(function (group) {
             UserCtl.addGroupToUser(user._id, group).then(function (user) {
-                GroupCtl.getUserGroups(req, res, user);
+                modelMiddleware.getAllUserInfo(user._id).then(function(user){
+                    res.status(200).json({user: user});
+                }, function (err) {
+                    res.status(500).json({error: err});
+                });
             }, function (err) {
                 res.status(500).json({error: err});
             });
@@ -99,7 +116,11 @@ module.exports = function (app) {
         var group = req.body.group;
         GroupCtl.getGroupById(group._id).then(function (group) {
             UserCtl.removeGroupToUser(user._id, group).then(function (user) {
-                GroupCtl.getUserGroups(req, res, user);
+                modelMiddleware.getAllUserInfo(user._id).then(function(user){
+                    res.status(200).json({user: user});
+                }, function (err) {
+                    res.status(500).json({error: err});
+                });
             }, function (err) {
                 res.status(500).json({error: err});
             });
@@ -118,15 +139,6 @@ module.exports = function (app) {
         })
     });
 
-    router.get('/user/:id/permissions', function (req, res) {
-        var userId = req.params.id;
-        UserCtl.getUserById(userId).then(function (user) {
-            PermissionCtl.getUserPermissions(req, res, user);
-        }, function (err) {
-            res.status(500).json({error: err});
-        });
-    });
-
     router.post('/user/permission', function (req, res) {
         var user = req.body.user;
         var permission = req.body.permission;
@@ -135,7 +147,11 @@ module.exports = function (app) {
                 return res.status(404).json({error: 'Permission not found'});
             }
             UserCtl.addPermissionToUser(user._id, permission).then(function (user) {
-                PermissionCtl.getUserPermissions(req, res, user);
+                modelMiddleware.getAllUserInfo(user._id).then(function(user){
+                    res.status(200).json({user: user});
+                }, function (err) {
+                    res.status(500).json({error: err});
+                });
             }, function (err) {
                 res.status(500).json({error: err});
             });
@@ -152,7 +168,11 @@ module.exports = function (app) {
                 return res.status(404).json({error: 'Permission not found'});
             }
             UserCtl.removePermissionToUser(user._id, permission).then(function (user) {
-                PermissionCtl.getUserPermissions(req, res, user);
+                modelMiddleware.getAllUserInfo(user._id).then(function(user){
+                    res.status(200).json({user: user});
+                }, function (err) {
+                    res.status(500).json({error: err});
+                });
             }, function (err) {
                 res.status(500).json({error: err});
             });
@@ -166,7 +186,11 @@ module.exports = function (app) {
         var application = req.body.application;
         ApplicationCtl.getApplicationById(application._id).then(function (application) {
             UserCtl.addApplicationToUser(user._id, application).then(function (user) {
-                res.status(200).json({user: user});
+                modelMiddleware.getAllUserInfo(user._id).then(function(user){
+                    res.status(200).json({user: user});
+                }, function (err) {
+                    res.status(500).json({error: err});
+                });
             })
         }, function (err) {
             res.status(404).json({error: err});
@@ -178,7 +202,11 @@ module.exports = function (app) {
         var application = req.body.application;
         ApplicationCtl.getApplicationById(application._id).then(function (application) {
             UserCtl.removeApplicationToUser(user._id, application).then(function (user) {
-                res.status(200).json({user: user});
+                modelMiddleware.getAllUserInfo(user._id).then(function(user){
+                    res.status(200).json({user: user});
+                }, function (err) {
+                    res.status(500).json({error: err});
+                });
             }, function (err) {
                 res.status(500).json({error: err});
             });
@@ -284,6 +312,16 @@ module.exports = function (app) {
         }, function (err) {
             res.status(500).json({error: err});
         });
+    });
+
+    router.get('/application/:id/permissions', function(req, res){
+        var applicationId = req.params.id;
+        PermissionCtl.getAllPermissionsByApplication(applicationId).then(function(permissions){
+            res.status(200).json({permissions: permissions});
+        }, function(err){
+            res.status(500).json({error: err});
+        });
+
     });
 
 

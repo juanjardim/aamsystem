@@ -2,7 +2,7 @@
 var User = require('../models/User');
 var q = require('q');
 var Group = require('../models/Group');
-var validator = require('validator');
+var _ = require('underscore');
 
 
 var groupController = function () {
@@ -10,7 +10,7 @@ var groupController = function () {
         var deferred = q.defer();
 
         getGroupByName(name).then(function (group) {
-            if (!validator.isNull(group)) {
+            if (!_.isNull(group)) {
                 return deferred.reject('Group already exist');
             }
 
@@ -36,7 +36,7 @@ var groupController = function () {
 
     var getGroupByName = function (name) {
         var deferred = q.defer();
-        if (validator.isNull(name)) {
+        if (_.isNull(name)) {
             deferred.reject('Group Name is needed');
             return deferred.promise;
         }
@@ -54,7 +54,7 @@ var groupController = function () {
 
     var getGroupById = function (id) {
         var deferred = q.defer();
-        if (validator.isNull(id)) {
+        if (_.isNull(id)) {
             deferred.reject('Invalid Id');
             return deferred.promise;
         }
@@ -63,7 +63,7 @@ var groupController = function () {
             if (err) {
                 return deferred.reject(err);
             }
-            if(validator.isNull(group)){
+            if(_.isNull(group)){
                 return deferred.reject('Group not found');
             }
             return deferred.resolve(group);
@@ -84,12 +84,12 @@ var groupController = function () {
 
     var changeGroupStatus = function (id, status) {
         var deferred = q.defer();
-        if (validator.isNull(id)) {
+        if (_.isNull(id)) {
             deferred.reject('Group Id cannot be null');
             return deferred.promise;
         }
 
-        if (validator.isNull(status)) {
+        if (_.isNull(status)) {
             deferred.reject('Status cannot be null');
             return deferred.promise;
         }
@@ -110,11 +110,11 @@ var groupController = function () {
 
     var addPermissionToGroup = function (id, permission) {
         var deferred = q.defer();
-        if (validator.isNull(id)) {
+        if (_.isNull(id)) {
             deferred.reject('Group Id cannot be null');
             return deferred.promise;
         }
-        if (validator.isNull(permission)) {
+        if (_.isNull(permission)) {
             deferred.reject('Permission cannot be null');
             return deferred.promise;
         }
@@ -140,18 +140,18 @@ var groupController = function () {
     var removePermissionToGroup = function (id, permission) {
         var deferred = q.defer();
         var promise = deferred.promise;
-        if (validator.isNull(id)) {
+        if (_.isNull(id)) {
             deferred.reject('Group Id cannot be null');
             return promise;
         }
 
-        if (validator.isNull(permission)) {
+        if (_.isNull(permission)) {
             deferred.reject('Permission cannot be null');
             return promise;
         }
 
         getGroupById(id).then(function (group) {
-            if(validator.isNull(group)){
+            if(_.isNull(group)){
                 return deferred.reject('Group not found');
             }
 
@@ -175,7 +175,7 @@ var groupController = function () {
     var getAllGroupsByIds = function (ids) {
         var deferred = q.defer();
         var promise = deferred.promise;
-        if (validator.isNull(ids)) {
+        if (_.isNull(ids)) {
             deferred.resolve([]);
             return promise;
         }

@@ -63,7 +63,18 @@ describe('Testing Application Routes Actions', function () {
                 });
         });
 
-        it('Get all Application Permission for specific user');
+        it('Get all Application Permission for specific user', function(done){
+            request(server)
+                .get(url + '/user/' + createdUser._id + '/permissions')
+                .set('Authorization', createdApp.jwtToken)
+                .expect(200)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should.exist(res.body.permissions);
+                    res.body.permissions.should.have.length(0);
+                    done();
+                });
+        });
 
         it('Change user password', function(done){
             request(server)

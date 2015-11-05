@@ -154,11 +154,6 @@ describe('Testing Group Controller', function () {
         });
     });
 
-    describe('User Groups', function(){
-        it('Get all User Groups');
-    });
-
-
     after(function (done) {
         mongoose.connection.db.dropDatabase(done);
     });

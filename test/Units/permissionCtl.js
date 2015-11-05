@@ -13,10 +13,11 @@ describe('Testing Permission Controller', function () {
             return done();
         mongoose.connect(config.mongoURI, done);
     });
+    var applicationId = mongoose.Types.ObjectId();
     var createdPermission = {
         name: 'FirstPermission',
         description: 'This is the first permission created',
-        application: mongoose.Types.ObjectId()
+        application: applicationId
     };
 
     it('Create a new Permission', function (done) {
@@ -92,49 +93,18 @@ describe('Testing Permission Controller', function () {
         });
     });
 
-    describe('User Permissions', function () {
-        var req, res, user, stub, permissions;
-        before(function (done) {
-            req = {};
-            res = {
-                send: function () {
-                    return this;
-                },
-                json: function (obj) {
-                    return this;
-                },
-                status: function (st) {
-                    return this;
-                }
-            };
-            stub = sinon.stub(res);
 
-            PermissionCtl.createPermission('Permission Test', 'Hello World', mongoose.Types.ObjectId()).then(function (permission) {
-                should.exist(permission);
-                permissions = [permission._id];
-                user = {
-                    _id: mongoose.Types.ObjectId(),
-                    name: 'User test',
-                    permissions: permissions
-                };
 
-                done();
-            }, function (err) {
-                should.not.exist(err);
-                done();
-            });
-        });
-
-        it('Get all User Permissions ', function (done) {
-            PermissionCtl.getUserPermissions(req, stub, user);
-            process.nextTick(function () {
-                stub.status.calledOnce.should.be.true;
-                //stub.status.calledWith(500).should.be.true;
-                stub.json.calledOnce.should.be.true;
-                done();
-            });
+    it('Get All permissions that bellong to an application', function(done){
+        PermissionCtl.getAllPermissionsByApplication(applicationId).then(function(permissions){
+            should.exist(permissions);
+            permissions.should.have.length(1);
+            done();
+        }, function(err){
+            should.not.exist(err);
         });
     });
+
 
     after(function (done) {
         mongoose.connection.db.dropDatabase(function () {
