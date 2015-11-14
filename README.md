@@ -1,4 +1,4 @@
-#Authencitcation and Authorization Management System (AAMSystem)#
+#Authentication and Authorization Management System (AAMSystem)#
 
 This project will allow to different web applications, written in PHP, JavaScript (Node), etc, to authenticate users and get all the permissions that the user has for that application.
 
