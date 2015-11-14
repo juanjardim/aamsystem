@@ -6,7 +6,7 @@ To run this project please run the following commands:
 - npm install
 - npm start
     
-If you want to run all the test, after the npm install command, run: npm test.
+If you want to run all the tests, after the npm install command, run: npm test.
 
 Be aware that this project need a mongo database where will be storage all the information that **AAMSystem** needs.
 
