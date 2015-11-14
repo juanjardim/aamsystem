@@ -53,6 +53,11 @@ describe('Testing User Controller', function () {
 
     });
 
+    describe('User Roles', function(){
+        it('Get All roles for a user');
+        it('Edit Roles for a user');
+    });
+
     describe('Get information of user', function () {
         it('Should get a null value when getting a user that doesn\'t exist', function (done) {
             UserCtl.getUserByUsername('xpto').then(function (user) {

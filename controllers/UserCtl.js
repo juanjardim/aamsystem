@@ -1,14 +1,15 @@
 'use strict';
 var crypto = require('crypto');
 var q = require('q');
+var _ = require('underscore');
 var User = require('../models/User');
 var Email = require('../services/email');
 var validator = require('validator');
 
 var userController = function () {
-    var createUser = function (username, email, fields) {
+    var createUser = function (username, email, fields, roles) {
         var deferred = q.defer();
-        if (username == undefined) {
+        if (_.isNull(username)) {
             deferred.reject("Username is needed");
             return deferred.promise;
         }
@@ -16,6 +17,10 @@ var userController = function () {
         if (!validator.isEmail(email)) {
             deferred.reject("Invalid e-mail");
             return deferred.promise;
+        }
+
+        if( _.isUndefined(roles) ||_.isNull(roles)  || roles.length === 0){
+            roles = ['User'];
         }
 
         getUserByUsername(username).then(function (user) {
@@ -28,7 +33,8 @@ var userController = function () {
                 email: email,
                 fields: fields,
                 password: generatedPassword,
-                status: 'ACTIVE'
+                status: 'ACTIVE',
+                roles : roles
             });
 
             newUser.save(function (err) {

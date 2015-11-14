@@ -4,7 +4,8 @@
   "description": "Authentication Authorization Manager System",
   "main": "server.js",
   "scripts": {
-    "test": "node_modules/.bin/mocha -w"
+    "start" : "node server.js",
+    "test": "./node_modules/.bin/mocha"
   },
   "keywords": [
     "Authenthication",

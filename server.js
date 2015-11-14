@@ -24,6 +24,7 @@ require('./routes/main')(app);
 require('./routes/admin')(app);
 require('./routes/authentication')(app);
 require('./routes/application')(app);
+require('./routes/aamsystem')(app);
 
 console.log('Magic happens on port: ' + config.port + '. Environment:' + config.environment);
 
