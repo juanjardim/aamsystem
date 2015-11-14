@@ -3,8 +3,9 @@
 This project will allow to different web applications, written in PHP, JavaScript (Node), etc, to authenticate users and get all the permissions that the user has for that application.
 
 To run this project please run the following commands: 
-	npm install
-    npm start
+- npm install
+- npm start
+    
 If you want to run all the test, after the npm install command, run: npm test.
 
 Be aware that this project need a mongo database where will be storage all the information that **AAMSystem** needs.
