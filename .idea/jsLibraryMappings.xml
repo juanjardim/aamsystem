@@ -4,6 +4,8 @@
     <file url="file://$PROJECT_DIR$" libraries="{AAMSystem node_modules}" />
     <file url="file://$PROJECT_DIR$/controllers/PermissionCtl.js" libraries="{Node.js Core}" />
     <file url="file://$PROJECT_DIR$/test/Units/AAMSystemCtl.js" libraries="{Node.js Core}" />
-    <file url="PROJECT" libraries="{bootstrap-DefinitelyTyped, express-DefinitelyTyped, mongoose-DefinitelyTyped, q-DefinitelyTyped}" />
+    <file url="PROJECT" libraries="{bootstrap-DefinitelyTyped, express-DefinitelyTyped, mocha-DefinitelyTyped, mongoose-DefinitelyTyped, q-DefinitelyTyped, underscore-DefinitelyTyped}" />
+    <includedPredefinedLibrary name="ECMAScript 6" />
+    <includedPredefinedLibrary name="Node.js Core" />
   </component>
 </project>

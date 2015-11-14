@@ -4,8 +4,9 @@
   "description": "Authentication Authorization Manager System",
   "main": "server.js",
   "scripts": {
-    "start" : "node server.js",
-    "test": "./node_modules/.bin/mocha"
+    "start": "node server.js",
+    "test": "./node_modules/.bin/mocha -w",
+    "ci-test": "./node_modules/.bin/mocha --recursive -R xunit test/ > test-reports.xml"
   },
   "keywords": [
     "Authenthication",
@@ -29,7 +30,8 @@
     "passport": "^0.3.0",
     "passport-local": "^1.0.0",
     "q": "^1.4.1",
-    "validator": "^4.1.0"
+    "validator": "^4.1.0",
+    "winston": "^2.1.0"
   },
   "devDependencies": {
     "better-console": "^0.2.4",
