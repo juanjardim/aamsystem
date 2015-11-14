@@ -1,8 +1,7 @@
-
 var environment = process.env.NODE_ENV || 'development';
 var mongoURI = '';
 var port = '3030';
-switch (environment){
+switch (environment) {
     case 'testing':
         mongoURI = 'mongodb://localhost/ammSystemTest';
         port = '3030';
